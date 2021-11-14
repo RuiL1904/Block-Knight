@@ -13,7 +13,7 @@ import LI12122
 -- | Verifica se o 'Mapa' é válido.
 validaPotencialMapa :: [(Peca, Coordenadas)] -> Bool
 validaPotencialMapa [] = False
-validaPotencialMapa l = coordenadaDiferente l
+validaPotencialMapa l = coordenadaDiferente l && portaUnica l
 
 -- | Verifica se as peças têm todas coordenadas diferentes.
 coordenadaDiferente :: [(Peca, Coordenadas)] -> Bool
@@ -29,3 +29,16 @@ pertenceCauda c ((_,s):t) = c /= s && pertenceCauda c t
 coordenadaPositiva :: [(Peca, Coordenadas)] -> Bool
 coordenadaPositiva [] = True
 coordenadaPositiva ((_,(x,y)):t) = x > 0 && y > 0 && coordenadaPositiva t
+
+-- | Verifica se existe uma e uma só 'Porta'.
+portaUnica :: [(Peca, Coordenadas)] -> Bool
+portaUnica [] = True
+portaUnica l = contaPortas l == 1
+
+-- | Auxiliar de portaUnica - Conta quantas portas existem no 'Mapa'.
+contaPortas :: [(Peca, Coordenadas)] -> Int
+contaPortas [] = 0
+contaPortas ((f,_):t) =
+    case f of
+        Porta -> 1 + contaPortas t
+        _ -> contaPortas t
