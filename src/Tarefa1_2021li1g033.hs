@@ -15,7 +15,7 @@ validaPotencialMapa :: [(Peca, Coordenadas)] -> Bool
 validaPotencialMapa l = coordenadaDiferente l  
                         && coordenadaPositiva l
                         && portaUnica l 
-                        && caixasAFlutuar l 
+                        && caixasAFlutuarWrapper l
                         && peloMenosUmVazio l
 
 -- TAREFA 1.1
@@ -52,12 +52,13 @@ contaPortas ((f,_):t) =
 -- TAREFA 1.3
 
 -- | Verifica se não existem caixas a flutuar.
-caixasAFlutuar :: [(Peca, Coordenadas)] -> Bool
-caixasAFlutuar [] = True
-caixasAFlutuar l@((f,(x,y)):t) =
+caixasAFlutuarWrapper l = caixasAFlutuar l l -- ^ Transforma a função que recebe dois argumentos (exatamente iguais) numa que recebe apenas um.
+caixasAFlutuar :: [(Peca, Coordenadas)] -> [(Peca, Coordenadas)] -> Bool
+caixasAFlutuar _ [] = True
+caixasAFlutuar m l@((f,(x,y)):t) =
     case f of
-        Caixa -> encontraPeca (x, y + 1) l && caixasAFlutuar t
-        _ -> caixasAFlutuar t
+        Caixa -> encontraPeca (x, y + 1) m && caixasAFlutuar m t
+        _ -> caixasAFlutuar m t
 
 -- | Auxiliar de caixasAFlutuar - Verifica se existe alguma peça na posição dada (neste caso: y + 1).
 encontraPeca :: Coordenadas -> [(Peca, Coordenadas)] -> Bool
