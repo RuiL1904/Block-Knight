@@ -9,6 +9,7 @@ Módulo para a realização da Tarefa 1 do projeto de LI1 em 2021/22.
 module Tarefa1_2021li1g033 where
 
 import LI12122
+import Utils
 
 -- | Verifica se o mapa é válido.
 validaPotencialMapa :: [(Peca, Coordenadas)] -> Bool
@@ -69,22 +70,6 @@ encontraPeca c ((f,c'@(x',y')):t)
 
 -- TAREFA 1.4
 
--- | Calcula a altura de um mapa.
-alturaMapa :: [(Peca, Coordenadas)] -> Int
-alturaMapa [] = 0
-alturaMapa [(f,(_,y))] = y + 1 -- ^ Caso exista apenas uma peça declarada.
-alturaMapa (p@(f,(x,y)):p'@(f',(x',y')):t)
-    | y >= y' = alturaMapa (p:t)
-    | otherwise = alturaMapa (p':t)
-
--- | Calcula a largura de um mapa.
-larguraMapa :: [(Peca, Coordenadas)] -> Int
-larguraMapa [] = 0
-larguraMapa [(f,(x,_))] = x + 1 -- ^ Caso exista apenas uma peça declarada.
-larguraMapa (p@(f,(x,y)):p'@(f',(x',y')):t)
-    | x >= x' = larguraMapa (p:t)
-    | otherwise = larguraMapa (p':t)
-
 -- | Verifica se existe pelo menos um espaço vazio (declarado ou não) no mapa.
 peloMenosUmVazio :: [(Peca, Coordenadas)] -> Bool
 peloMenosUmVazio l = existemDeclarados l || existemNaoDeclarados ((alturaMapa l) - 1) l 
@@ -101,10 +86,3 @@ existemDeclarados ((f,_):t) =
 existemNaoDeclarados :: Int -> [(Peca, Coordenadas)] -> Bool
 existemNaoDeclarados (-1) _ = False -- ^ (-1), pois a posição inicial é 0.
 existemNaoDeclarados x l = length (pecasNaLinha x l) /= larguraMapa l || existemNaoDeclarados (x - 1) l
-
--- | Auxiliar de existemNaoDeclarados - Encontra todas as peças declaradas numa linha.
-pecasNaLinha :: Int -> [(Peca, Coordenadas)] -> [(Peca, Coordenadas)]
-pecasNaLinha _ [] = []
-pecasNaLinha l (p@(f,(x,y)):t)
-    | l == y = p : pecasNaLinha l t
-    | otherwise = pecasNaLinha l t
