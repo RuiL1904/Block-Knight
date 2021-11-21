@@ -29,8 +29,8 @@ pecasNaLinha x (p@(f,(_,y)):t)
 -- | Cria uma lista com todas as peças de um mapa.
 listaPecas :: [(Peca, Coordenadas)] -> [Peca]
 listaPecas l = map fst l
--- | Cria uma lista de pares com todas as coordenadas de um mapa.
 
+-- | Cria uma lista de pares com todas as coordenadas (ordenadas por ordem crescente) de um mapa.
 sortedCoordenadas :: [(Peca, Coordenadas)] -> [Coordenadas]
 sortedCoordenadas l = sort (map snd l)
 
