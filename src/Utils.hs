@@ -1,7 +1,8 @@
 module Utils where
 
 import LI12122
-import Data.List (sort)
+import Data.List
+import Data.Function
 
 -- | Calcula a altura de um mapa.
 alturaMapa :: [(Peca, Coordenadas)] -> Int
@@ -26,16 +27,12 @@ pecasNaLinha x (p@(f,(_,y)):t)
     | x == y = p : pecasNaLinha x t
     | otherwise = pecasNaLinha x t
 
--- | Cria uma lista com todas as peças de um mapa.
-listaPecas :: [(Peca, Coordenadas)] -> [Peca]
-listaPecas l = map fst l
+-- | Ordena um mapa por ordem crescente das suas coordenadas.
+ordenaMapa :: [(Peca, Coordenadas)] -> [(Peca, Coordenadas)]
+ordenaMapa [] = []
+ordenaMapa l = sortBy (compare `on` snd) l
 
--- | Cria uma lista de pares com todas as coordenadas (ordenadas por ordem crescente) de um mapa.
-sortedCoordenadas :: [(Peca, Coordenadas)] -> [Coordenadas]
-sortedCoordenadas l = sort (map snd l)
-
--- | Junta duas listas num par - uma de peças e outra de coordenadas.
-juntaListas :: [Peca] -> [Coordenadas] -> [(Peca, Coordenadas)]
-juntaListas [] _ = []
-juntaListas _ [] = []
-juntaListas (h:t) (h':t') = (h,h') : juntaListas t t'
+-- | Transforma a lista dada, numa lista apenas com as segundas componentes (neste caso coordenadas).
+listaCoordenadas :: [(Peca, Coordenadas)] -> [Coordenadas]
+listaCoordenadas [] = []
+listaCoordenadas l = map snd l
