@@ -19,7 +19,7 @@ constroiMapa l = constroiMapa' l (constroiMapaVazio l)
         constroiMapa' [] m = m
         constroiMapa' (h:t) m = constroiMapa' t (inserePeca h m)
 
--- | Constrói uma lista com um número de listas vazias igual à altura do mapa (y), cujo cada lista contém Vazios.
+-- | Constrói uma lista com um número de listas vazias igual à altura do mapa (y), cujo cada lista contém Vazios (até à largura (x) máxima).
 constroiMapaVazio :: [(Peca, Coordenadas)] -> Mapa
 constroiMapaVazio l = [listaComVazios | _ <- [0..altura]] -- ^ Constrói a lista por compreensão.
     where
@@ -29,6 +29,7 @@ constroiMapaVazio l = [listaComVazios | _ <- [0..altura]] -- ^ Constrói a lista
 
 -- | Insere cada uma das peças no espaço correspondente.
 inserePeca :: (Peca, Coordenadas) -> Mapa -> Mapa
+inserePeca _ [] = []
 -- | Insere em y.
 inserePeca (f,(x,y)) (h:t)
     | y == 0 = (inserePeca' f x h) : t
@@ -44,10 +45,10 @@ desconstroiMapa l = desconstroiPeca l 0
 -- | Desconstrói as peças.
 desconstroiPeca :: Mapa -> Int -> [(Peca, Coordenadas)]
 desconstroiPeca [] _ = []
-desconstroiPeca (h:t) y = (desconstroiPLinha h 0 y) ++ (desconstroiPeca t (y + 1))
+desconstroiPeca (h:t) y = (desconstroiLinha h 0 y) ++ (desconstroiPeca t (y + 1))
 
 -- | Auxiliar de descontroiPeca - Desconstrói as peças por linha.
-desconstroiPLinha :: [Peca] -> Int -> Int -> [(Peca, Coordenadas)]
-desconstroiPLinha [] _ _ = []
-desconstroiPLinha (Vazio:t) x y = desconstroiPLinha t (x + 1) y
-desconstroiPLinha (h:t) x y = (h,(x,y)) : desconstroiPLinha t (x + 1) y
+desconstroiLinha :: [Peca] -> Int -> Int -> [(Peca, Coordenadas)]
+desconstroiLinha [] _ _ = []
+desconstroiLinha (Vazio:t) x y = desconstroiLinha t (x + 1) y
+desconstroiLinha (h:t) x y = (h,(x,y)) : desconstroiLinha t (x + 1) y
