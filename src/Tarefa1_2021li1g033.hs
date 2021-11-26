@@ -182,3 +182,53 @@ existemNaoDeclarados ::
     -> Bool -- ^ Resultado.
 existemNaoDeclarados (-1) _ = False -- > (-1), pois a posição inicial é 0.
 existemNaoDeclarados x l = length (pecasNaLinha x l) /= larguraMapa l || existemNaoDeclarados (x - 1) l
+
+-- TAREFA 1.5
+
+chaoValido :: [(Peca,Coordenadas)] -> Bool
+chaoValido [] = False
+chaoValido l@((p,(x,y)):t) 
+    | 
+
+
+-- | Auxiliar de chaoValido - Agrupa todas as coordenadas de Blocos numa lista
+
+agrupaBlocoX :: [(Peca,Coordenadas)] -> [(Peca,Coordenadas)]
+agrupaBlocoX [] = []
+agrupaBlocoX ((p,(x,y)):t) 
+    | p == Bloco = ((p,(x,y)): agrupaBlocoX t)
+    | otherwise = agrupaBlocoX t 
+
+-- | Auxiliar de chaoValido - Agrupa Blocos com a menor e mesma abcissa (neste caso x=0)
+
+agrupaMenorXWrapper l = agrupaMenorX (agrupaBlocoX l) (agrupaBlocoX l) 
+agrupaMenorX :: [(Peca, Coordenadas)] -> [(Peca,Coordenadas)] -> [(Peca,Coordenadas)]
+agrupaMenorX [] _ = []
+agrupaMenorX l@((p,(x,y)):t) l'
+    | x == minX = (p,(x,y)) : agrupaMenorX t l'
+    | otherwise = agrupaMenorX t l'
+    where minX = minimum (map fst l'')
+          l'' = map snd l'
+
+-- Auxiliar de chaoValido - Calcula o Bloco de maior coordenada y de x=0
+
+blocoMaiorYMenorX :: [(Peca, Coordenadas)] -> (Peca, Coordenadas) 
+blocoMaiorYMenorX l@((p,(x,y)):t) = (Bloco, maximum (map snd l'))
+  where l' = agrupaMenorXWrapper l
+  
+-- Auxiliar de chaoValido - Agrupa Blocos com a maior abcissa 
+
+agrupaMaiorXWrapper l = agrupaMaiorX (agrupaBlocoX l) (agrupaBlocoX l)
+agrupaMaiorX :: [(Peca,Coordenadas)] -> [(Peca,Coordenadas)] -> [(Peca,Coordenadas)]
+agrupaMaiorX [] _ = []
+agrupaMaiorX l@((p,(x,y)):t) l'
+    | x == maxX = (p,(x,y)) : agrupaMaiorX t l'
+    | otherwise = agrupaMaiorX t l'
+    where maxX = maximum (map fst l'')
+          l'' = map snd l'
+
+-- Auxiliar de chaoValido - Calcula o Bloco de maior coordenada y do maior X
+
+blocoMaiorYMaiorX :: [(Peca,Coordenadas)] -> (Peca,Coordenadas)
+blocoMaiorYMaiorX l@((p,(x,y)):t) = (Bloco, maximum (map snd l'))
+  where l' = agrupaMaiorXWrapper l 
