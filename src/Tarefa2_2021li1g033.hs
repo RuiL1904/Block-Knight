@@ -12,20 +12,22 @@ import LI12122
 import Tarefa1_2021li1g033
 import Utils
 
+-- | Transforma uma lista de pares de 'Peca' e de 'Coordenadas' num 'Mapa'.
 constroiMapa :: [(Peca, Coordenadas)] -> Mapa
 constroiMapa [] = []
-constroiMapa l = constroiMapa' l (constroiMapaVazio l)
-    where
-        constroiMapa' [] m = m
-        constroiMapa' (h:t) m = constroiMapa' t (inserePeca h m)
+constroiMapa l = constroiMapaWrapper l (constroiMapaVazio l)
 
--- | Constrói uma lista com um número de listas vazias igual à altura do mapa (y), cujo cada lista contém Vazios (até à largura (x) máxima).
+constroiMapaWrapper :: [(Peca, Coordenadas)] -> Mapa -> Mapa
+constroiMapaWrapper [] m = m
+constroiMapaWrapper (h:t) m = constroiMapaWrapper t (inserePeca h m)
+
+-- | Constrói uma lista com um número de listas vazias igual à altura do mapa (y), cujo cada lista contém 'Vazio' (até à largura (x) máxima).
 constroiMapaVazio :: [(Peca, Coordenadas)] -> Mapa
-constroiMapaVazio l = [listaComVazios | _ <- [0..altura]] -- ^ Constrói a lista por compreensão.
+constroiMapaVazio l = [listaComVazios | _ <- [0..altura]] -- > Constrói a lista por compreensão.
     where
-        largura = (larguraMapa l) - 1
-        altura = (alturaMapa l) - 1
-        listaComVazios = [Vazio | _ <- [0..largura]] -- ^ Constrói a lista por compreensão.
+        largura = larguraMapa l
+        altura = alturaMapa l
+        listaComVazios = [Vazio | _ <- [0..largura]] -- > Constrói a lista por compreensão.
 
 -- | Insere cada uma das peças no espaço correspondente.
 inserePeca :: (Peca, Coordenadas) -> Mapa -> Mapa
@@ -39,6 +41,7 @@ inserePeca (f,(x,y)) (h:t)
             | x == 0 = f : t
             | otherwise = h : inserePeca' f (x - 1) t
 
+-- | Função inversa de 'constroiMapa'.
 desconstroiMapa :: Mapa -> [(Peca, Coordenadas)]
 desconstroiMapa l = desconstroiPeca l 0
 
@@ -47,7 +50,7 @@ desconstroiPeca :: Mapa -> Int -> [(Peca, Coordenadas)]
 desconstroiPeca [] _ = []
 desconstroiPeca (h:t) y = (desconstroiLinha h 0 y) ++ (desconstroiPeca t (y + 1))
 
--- | Auxiliar de descontroiPeca - Desconstrói as peças por linha.
+-- | Auxiliar de 'descontroiPeca' - Desconstrói as peças por linha.
 desconstroiLinha :: [Peca] -> Int -> Int -> [(Peca, Coordenadas)]
 desconstroiLinha [] _ _ = []
 desconstroiLinha (Vazio:t) x y = desconstroiLinha t (x + 1) y
