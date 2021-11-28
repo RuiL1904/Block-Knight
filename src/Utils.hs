@@ -20,6 +20,8 @@ larguraMapa (p@(f,(x,y)):p'@(f',(x',y')):t)
     | x >= x' = larguraMapa (p:t)
     | otherwise = larguraMapa (p':t)
 
+-- | Calcula a altura de um 'Mapa'.
+
 -- | Encontra todas as peças declaradas numa linha.
 pecasNaLinha :: Int -> [(Peca, Coordenadas)] -> [(Peca, Coordenadas)]
 pecasNaLinha _ [] = []
@@ -82,3 +84,44 @@ coordenadaPertence _ [] = False
 coordenadaPertence c (c':t)
     | c == c' = True
     | otherwise = coordenadaPertence c t
+
+-- | Encontra a 'Peca' que se encontra numas determinadas 'Coordenadas'.
+encontraPeca :: Coordenadas -> Mapa -> Maybe Peca
+encontraPeca _ [] = Nothing
+encontraPeca (x,0) (h:t) = encontraNaLinha x h
+encontraPeca (x,y) (h:t) = encontraPeca (x,y - 1) t
+
+-- | Auxiliar de 'encontraNaLinha' - Procura pela 'Peca' na linha.
+encontraNaLinha :: Int -> [Peca] -> Maybe Peca
+encontraNaLinha _ [] = Nothing
+encontraNaLinha 0 (h:t) = Just h
+encontraNaLinha x (h:t) = encontraNaLinha (x - 1) t
+
+pecaEsperada :: Peca -> Coordenadas -> Mapa -> Bool
+pecaEsperada _ _ [] = False
+pecaEsperada p c@(x,y) m
+    | x < 0 || y < 0 || x > (length (head m)) || y > length m = False
+    | encontraPeca c m == Just p = True
+    | otherwise = False
+
+pecaImpossivel :: Coordenadas -> Mapa -> Bool
+pecaImpossivel c m
+    | encontraPeca c m == Nothing = True
+    | otherwise = False
+
+encontraBaixo :: Coordenadas -> Mapa -> Coordenadas
+encontraBaixo c@(x,y) m
+    | pecaEsperada Bloco (x,y + 1) m || pecaEsperada Caixa (x,y + 1) m = c
+    | otherwise = encontraBaixo (x,y + 1) m -- Caso não seja nem 'Bloco' nem 'Caixa'.
+
+substituiPeca c p m = substituiPecaWrapper c p m m
+
+substituiPecaWrapper :: Coordenadas -> Peca -> Mapa -> Mapa -> Mapa
+substituiPecaWrapper (x,0) p (h:t) m = m ++ [substituiPecaNaLinha x p h] ++ t
+substituiPecaWrapper (x,y) p (h:t) m = substituiPecaWrapper (x,y - 1) p t (m ++ [h])
+
+substituiPecaNaLinha x p l = substituiPecaNaLinhaWrapper x p l []
+
+substituiPecaNaLinhaWrapper :: Int -> Peca -> [Peca] -> [Peca] -> [Peca]
+substituiPecaNaLinhaWrapper 0 p (h:t) l = l ++ [p] ++ t
+substituiPecaNaLinhaWrapper x p (h:t) l = substituiPecaNaLinhaWrapper (x - 1) p t (l ++ [h])
