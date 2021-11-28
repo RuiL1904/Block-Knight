@@ -2,7 +2,7 @@ module Fixtures where
 
 import LI12122
 
-m1, m2, m3, m4, m5, m6, m7, m8, m9 :: [(Peca, Coordenadas)]
+m1, m2, m3, m4, m5, m6, m7, m8, m9, m10, m11, m12, m13 :: [(Peca, Coordenadas)]
 
 m1 =
   [ (Porta, (0, 3)),
@@ -277,6 +277,75 @@ m9 =
     (Bloco,(22,11)),
     (Bloco,(22,12))
  ]
+
+m10 = 
+  [ (Bloco,(0,0)),
+    (Bloco,(0,1)),
+    (Bloco,(0,2)),
+    (Bloco,(0,3)),
+    (Bloco,(0,4)),
+    (Porta,(1,2)),
+    (Bloco,(1,3)),
+    (Bloco,(1,6)),
+    (Bloco,(2,3)),
+    (Bloco,(2,5)),
+    (Bloco,(3,3)),
+    (Bloco,(3,5)),
+    (Bloco,(4,3)),
+    (Bloco,(4,4)),
+    (Bloco,(4,5)),
+    (Caixa,(5,4)),
+    (Bloco,(5,5)),
+    (Bloco,(6,5)),
+    (Bloco,(7,1)),
+    (Bloco,(7,2)),
+    (Bloco,(7,3)),
+    (Bloco,(7,4)),
+    (Bloco,(7,5))
+  ]
+
+m11 = 
+  [ (Porta,(0,2)),
+    (Bloco,(0,3)),
+    (Bloco,(1,3)),
+    (Bloco,(2,3)),
+    (Bloco,(3,3)),
+    (Bloco,(4,3)),
+    (Bloco,(5,3)),
+    (Bloco,(0,5)),
+    (Bloco,(1,5)),
+    (Bloco,(1,6)),
+    (Caixa,(2,6)),
+    (Bloco,(2,7)),
+    (Bloco,(3,7)),
+    (Bloco,(5,5)),
+    (Caixa,(4,9)),
+    (Bloco,(4,10)),
+    (Bloco,(4,5)),
+    (Bloco,(5,6))
+ ]
+
+m12 = 
+  [ (Bloco,(0,4)),
+    (Bloco,(1,4)),
+    (Bloco,(2,4)),
+    (Bloco,(3,4)),
+    (Bloco,(4,4)),
+    (Porta,(4,3)),
+    (Caixa,(0,3)),
+    (Caixa,(0,1)),
+    (Caixa,(1,2)),
+    (Bloco,(1,3))
+  ]
+
+m13 = 
+  [ (Porta,(0,2)),
+    (Bloco,(0,3)),
+    (Bloco,(1,3)),
+    (Bloco,(2,3)),
+    (Bloco,(4,3)),
+    (Vazio,(4,0))
+  ]
 
 m1r, m2r, m3r, m4r, m5r, m6r, m7r :: Mapa
 
