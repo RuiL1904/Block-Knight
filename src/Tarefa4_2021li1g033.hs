@@ -4,7 +4,7 @@ Description : Movimentação do personagem
 Copyright   : Rui Lopes Martins <a100643@alunos.uminho.pt>;
             : Diogo Ribeiro Vassalo de Abreu <a100646@alunos.uminho.pt>;
 
-Módulo para a realização da Tarefa 4 do projeto de LI1 em 2021/22.
+O objetivo desta tarefa é implementar a função 'moveJogador' que aplica o efeito de um comando (i.e. 'Movimento') sobre o jogador, e a sua generalização 'correrMovimentos' que aplica consecutivamente os comandos dados pela lista.
 -}
 module Tarefa4_2021li1g033 where
 
@@ -12,7 +12,11 @@ import LI12122
 import Utils
 import Tarefa3_2021li1g033
 
-moveJogador :: Jogo -> Movimento -> Jogo
+-- | Verifica se o 'Movimento' é aplicável.
+moveJogador :: 
+    Jogo -- ^ Um 'Jogo'.
+    -> Movimento -- ^ Um 'Movimento' a aplicar.
+    -> Jogo -- ^ Resultado - O 'Jogo' depois de se ter aplicado o 'Movimento'.
 moveJogador j mov =
     case mov of
         AndarEsquerda -> moveEsquerda j
@@ -20,11 +24,18 @@ moveJogador j mov =
         Trepar -> podeTrepar j
         InterageCaixa -> interageCaixa j
 
-correrMovimentos :: Jogo -> [Movimento] -> Jogo
+-- | Aplica cada uma lista de 'Movimento' ao 'Jogo'.
+correrMovimentos :: 
+    Jogo -- ^ Um 'Jogo'.
+    -> [Movimento] -- ^ Uma lista de 'Movimento'.
+    -> Jogo -- ^ Resultado - O 'Jogo' depois de lhe ter sido aplicada a lista de 'Movimento'.
 correrMovimentos j [] = j
 correrMovimentos j (h:t) = correrMovimentos (moveJogador j h) t
 
-moveEsquerda :: Jogo -> Jogo
+-- | Aplica o 'Movimento': 'AndarEsquerda'.
+moveEsquerda :: 
+    Jogo -- ^ Um 'Jogo'.
+    -> Jogo -- ^ Resultado.
 moveEsquerda j =
     case j of
         Jogo m (Jogador (x,y) _ True)
@@ -34,7 +45,10 @@ moveEsquerda j =
             | pecaEsperada Vazio (x - 1,y) m || pecaEsperada Porta (x - 1,y) m -> Jogo m (Jogador (encontraBaixo (x - 1,y) m) Oeste False)
             | otherwise -> Jogo m (Jogador (x,y) Oeste False)
 
-moveDireita :: Jogo -> Jogo
+-- | Aplica o 'Movimento': 'AndarDireita'.
+moveDireita ::
+    Jogo -- ^ Um 'Jogo'.
+    -> Jogo -- ^ Resultado.
 moveDireita j =
     case j of
         Jogo m (Jogador (x,y) _ True)
@@ -44,7 +58,10 @@ moveDireita j =
             | pecaEsperada Vazio (x + 1,y) m || pecaEsperada Porta (x - 1,y) m -> Jogo m (Jogador (encontraBaixo (x + 1,y) m) Este False)
             | otherwise -> Jogo m (Jogador (x,y) Este False)
 
-podeTrepar :: Jogo -> Jogo
+-- | Aplica o 'Movimento': 'Trepar'.
+podeTrepar ::
+    Jogo -- ^ Um 'Jogo'.
+    -> Jogo -- ^ Resultado.
 podeTrepar j =
     case j of
         Jogo m (Jogador (x,y) Oeste True)
@@ -72,7 +89,10 @@ podeTrepar j =
                     _ -> j
             | otherwise -> j
 
-interageCaixa :: Jogo -> Jogo
+-- | Aplica o 'Movimento': 'InterageCaixa'.
+interageCaixa ::
+    Jogo -- ^ Um 'Jogo'.
+    -> Jogo -- ^ Resultado.
 interageCaixa j =
     case j of
         Jogo m (Jogador (x,y) Oeste True)
