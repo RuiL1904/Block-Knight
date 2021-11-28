@@ -19,10 +19,8 @@ import Fixtures
 import Utils
 
 moveJogador :: Jogo -> Movimento -> Jogo
+moveJogador jogo = jogo 
 moveJogador jogo movimento = verificaMovimento jogo movimento 
-
-correrMovimentos :: Jogo -> [Movimento] -> Jogo
-correrMovimentos jogo movimentos = undefined
 
 --Função auxiliar de verificaMovimento de moveJogador que indica qual a peça numa determinada coordenada
 
@@ -43,17 +41,18 @@ verificaMovimento (Jogo l (Jogador (x,y) d b)) m
     | d == Oeste && m == AndarDireita = Jogo l (Jogador (x,y) Este b)
     | d == Oeste && m == AndarDireita && encontraPeca l (x, y + 1) == Just Vazio = error "Jogador não consegue estar nessa posição"
     | d == Oeste && m == AndarEsquerda && encontraPeca l (x, y + 1) == Just Vazio = error "Jogador não consegue estar nessa posição"
-    | d == Oeste && m == AndarEsquerda && encontraPeca l (x - 1, y - 1) == Just Vazio = Jogo l (Jogador (x,y) d b) 
+    | d == Oeste && m == AndarEsquerda && encontraPeca l (x - 1, y + 1) == Just Vazio = Jogo l (Jogador (x,y) d b) 
     | d == Oeste && m == AndarEsquerda && encontraPeca l (x - 1,y) == Just Porta = Jogo l (Jogador (x,y) d b) 
-    | d == Oeste && m == AndarEsquerda && b == True && encontraPeca l (x, y - 1) == Just Bloco || encontraPeca l (x, y - 1) == Just Caixa = error "Jogador não consegue estar nessa posição com a caixa"
-    | d == Oeste && m == AndarEsquerda && b == False && encontraPeca l (x - 1, y + 1) == Just Bloco || encontraPeca l (x - 1, y + 1) == Just Caixa  && encontraPeca l (x - 1,y) == Just Vazio = Jogo l (Jogador (x - 1,y) d b) 
-    | d == Oeste && m == AndarEsquerda && b == True && encontraPeca l (x - 1, y - 2) == Just Bloco || encontraPeca l (x - 1, y + 1) == Just Caixa  = Jogo l (Jogador (x,y) d b) 
+    | d == Oeste && m == AndarEsquerda && b == True && encontraPeca l (x, y - 1) == Just Bloco || encontraPeca l (x, y - 1) == Just Caixa = Jogo l (Jogador (x,y) d b)
+    | d == Oeste && m == AndarEsquerda && b == False && encontraPeca l (x - 1, y) == Just Bloco || encontraPeca l (x - 1, y) == Just Caixa = Jogo l (Jogador (x - 1,y) d b) 
+    | d == Oeste && m == AndarEsquerda && b == True && encontraPeca l (x - 1, y - 2) == Just Bloco || encontraPeca l (x - 1, y - 2) == Just Caixa  = Jogo l (Jogador (x,y) d b) 
     | d == Oeste && m == AndarEsquerda && encontraPeca l (x - 1, y + 1) == Just Vazio = Jogo l (Jogador (x - 1, (maiorY (listaColuna (desconstroiMapa l) (x - 1))) - 1) d b)
     | d == Oeste && m == Trepar && b == False && encontraPeca l (x - 1,y) == Just Bloco || encontraPeca l (x - 1, y + 1) == Just Caixa  && encontraPeca l (x - 1, y - 1) == Just Vazio = Jogo l (Jogador (x - 1, y - 1) d b)
     | d == Oeste && m == Trepar && b == False && encontraPeca l (x - 1, y - 1) == Just Bloco || encontraPeca l (x - 1, y + 1) == Just Caixa  = Jogo l (Jogador (x,y) d b)
-    | d == Oeste && m == Trepar && b == True && encontraPeca l (x - 1, y - 2) == Just Bloco || encontraPeca l (x - 1, y + 1) == Just Caixa  = Jogo l (Jogador (x,y) d b)  
-    | d == Oeste && m == Trepar && b == True && encontraPeca l (x - 1, y) == Just Bloco || encontraPeca l (x - 1, y + 1) == Just Caixa  && encontraPeca l (x - 1, y - 1) == Just Vazio && encontraPeca l (x - 1, y - 2) == Just Vazio = Jogo l (Jogador (x - 1, y - 1) d b)
-    | d == Oeste && m == InterageCaixa && b == False && encontraPeca l (x, y - 1) == Just Bloco || encontraPeca l (x - 1, y + 1) == Just Caixa  = Jogo l (Jogador (x,y) d b) 
+    | d == Oeste && m == Trepar && b == True && encontraPeca l (x - 1, y - 2) == Just Bloco || encontraPeca l (x - 1, y - 2) == Just Caixa  = Jogo l (Jogador (x,y) d b)  
+    | d == Oeste && m == Trepar && b == True && encontraPeca l (x - 1, y) == Just Bloco || encontraPeca l (x - 1,y) == Just Caixa  && encontraPeca l (x - 1, y - 1) == Just Vazio && encontraPeca l (x - 1, y - 2) == Just Vazio = Jogo l (Jogador (x - 1, y - 1) d b)
+    | d == Oeste && m == InterageCaixa && b == False && encontraPeca l (x - 1, y) == Just Caixa && encontraPeca l (x, y - 1) == Just Bloco || encontraPeca l (x, y - 1) == Just Caixa  = Jogo l (Jogador (x,y) d b)
+    | d == Oeste && m == InterageCaixa && b == False && encontraPeca l (x - 1,y) == Just Caixa && encontraPeca l (x, y - 1) == Just Vazio = Jogo l (Jogador (x,y) d True)
     | d == Este && m == AndarEsquerda = Jogo l (Jogador (x,y) Oeste b)
     | d == Este && m == AndarEsquerda && encontraPeca l (x, y + 1) == Just Vazio = error "Jogador não consegue estar nessa posição"
     | d == Este && m == AndarDireita && encontraPeca l (x, y + 1) == Just Vazio = error "Jogador não consegue estar nessa posição"
@@ -65,14 +64,10 @@ verificaMovimento (Jogo l (Jogador (x,y) d b)) m
     | d == Este && m == AndarDireita && encontraPeca l (x + 1, y + 1) == Just Vazio = Jogo l (Jogador (x + 1, (maiorY (listaColuna (desconstroiMapa l) (x - 1))) - 1) d b)
     | d == Este && m == Trepar && b == False && encontraPeca l (x + 1,y) == Just Bloco || encontraPeca l (x - 1, y + 1) == Just Caixa  && encontraPeca l (x + 1, y - 1) == Just Vazio = Jogo l (Jogador (x + 1, y - 1) d b)
     | d == Este && m == Trepar && b == False && encontraPeca l (x + 1, y - 1) == Just Bloco || encontraPeca l (x - 1, y + 1) == Just Caixa  = Jogo l (Jogador (x,y) d b)
-    | d == Este && m == Trepar && b == True && encontraPeca l (x + 1, y - 2) == Just Bloco || encontraPeca l (x - 1, y + 1) == Just Caixa  = Jogo l (Jogador (x,y) d b)  
-    | d == Este && m == Trepar && b == True && encontraPeca l (x + 1, y) == Just Bloco || encontraPeca l (x - 1, y + 1) == Just Caixa  && encontraPeca l (x + 1, y - 1) == Just Vazio && encontraPeca l (x + 1, y - 2) == Just Vazio = Jogo l (Jogador (x + 1, y - 1) d b)
-    | d == Este && m == InterageCaixa && b == False && encontraPeca l (x, y - 1) == Just Bloco || encontraPeca l (x - 1, y + 1) == Just Caixa  = Jogo l (Jogador (x,y) d b)    
-
---Função auxiliar de verificaMovimento para pegar em caixas
-
-retiraCaixa :: Jogo -> Movimento -> Jogo 
-retiraCaixa (Jogo l (Jogador (x,y) d b)) m = undefined
+    | d == Este && m == Trepar && b == True && encontraPeca l (x + 1, y - 2) == Just Bloco || encontraPeca l (x - 1, y - 2) == Just Caixa  = Jogo l (Jogador (x,y) d b)  
+    | d == Este && m == Trepar && b == True && encontraPeca l (x + 1,y) == Just Bloco || encontraPeca l (x + 1,y) == Just Caixa  && encontraPeca l (x + 1, y - 1) == Just Vazio && encontraPeca l (x + 1, y - 2) == Just Vazio = Jogo l (Jogador (x + 1, y - 1) d b)
+    | d == Este && m == InterageCaixa && b == False&& encontraPeca l (x + 1, y) == Just Caixa && encontraPeca l (x, y - 1) == Just Bloco || encontraPeca l (x, y - 1) == Just Caixa  = Jogo l (Jogador (x,y) d b)
+    | d == Este && m == InterageCaixa && b == False && encontraPeca l (x + 1,y) == Just Caixa && encontraPeca l (x, y - 1) == Just Vazio = Jogo l (Jogador (x,y) d True)    
 
 --Função auxiliar de verificaMovimento que introduzindo o x da coluna define uma lista com os elementos dessa coluna  
 
