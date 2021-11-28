@@ -196,7 +196,10 @@ validaChaoWrapper x l
     | coordenadaPertence (x + 1, alturaMapa (pecasNaColuna x l)) (listaCoordenadas l) = validaChaoWrapper (x + 1) (retiraColuna x l)
     | coordenadaPertence (x + 1, alturaMapa (pecasNaColuna x l) + 1) (listaCoordenadas l) = validaChaoWrapper (x + 1) (retiraColuna x l)
     | coordenadaPertence (x + 1, alturaMapa (pecasNaColuna x l) - 1) (listaCoordenadas l) = validaChaoWrapper (x + 1) (retiraColuna x l)
-    {-
+    {- Referente às 2 primeiras condições abaixo:
+    Verifica se a menor ordenada (y) da "primeira" coluna está mais abaixo do que a menor ordenada (y) da coluna seguinte, 
+    caso isso aconteça e exista um 'Bloco' acima do 'Bloco' com menor ordenada, então o 'Bloco' com menor ordenada (y) da "primeira coluna"
+    é eliminado e chama-se novamente a função (sem o 'Bloco').
     -}
     | alturaMapa (pecasNaColuna x l) > alturaMapa (pecasNaColuna (x + 1) l) && coordenadaPertence (x,(alturaMapa l) - 1) (listaCoordenadas l) = validaChaoWrapper x (retiraPeca (x,(alturaMapa (pecasNaColuna x l))) l)
     | menorOrdenadaWrapper (pecasNaColuna x l) < menorOrdenadaWrapper (pecasNaColuna (x + 1) l) && coordenadaPertence (x,(alturaMapa l) + 1) (listaCoordenadas l) = validaChaoWrapper x (retiraPeca (x,(menorOrdenadaWrapper (pecasNaColuna x l))) l)
