@@ -4,7 +4,14 @@ Description : Representação textual do jogo
 Copyright   : Rui Lopes Martins <a100643@alunos.uminho.pt>;
             : Diogo Ribeiro Vassalo de Abreu <a100646@alunos.uminho.pt>;
 
-Módulo para a realização da Tarefa 3 do projeto de LI1 em 2021/22.
+O objetivo desta tarefa é tornar o tipo de dados 'Jogo' uma instância da class 'Show' de acordo com a seguinte formatação:
+
+1. Espaços vazios denotam-se por " " (um espaço em branco).
+2. Blocos de pedra denotam-se por "X".
+3. Caixas denotam-se por "C".
+4. A porta denota-se por "P".
+5. O personagem denota-se por "<" (se estiver voltado para esquerda) ou 
+">" (se estiver voltado para a direita).
 -}
 module Tarefa3_2021li1g033 (
   -- ** Desenhar o 'Mapa'.

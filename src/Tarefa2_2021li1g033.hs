@@ -4,7 +4,7 @@ Description : Construção/Desconstrução do mapa
 Copyright   : Rui Lopes Martins <a100643@alunos.uminho.pt>;
             : Diogo Ribeiro Vassalo de Abreu <a100646@alunos.uminho.pt>;
 
-Módulo para a realização da Tarefa 2 do projeto de LI1 em 2021/22.
+O objetivo desta tarefa é implementar o par de funções 'constroiMapa' e 'desconstroiMapa' que dada uma lista válida (cf. Tarefa 1) de peças e respetivas coordenadas constrói um mapa (a grelha propriamente dita), e a sua "inversa" que toma um mapa e devolve a listagem das suas peças e respetivas coordenadas.
 -}
 module Tarefa2_2021li1g033 (
     -- ** Construção do 'Mapa'.
