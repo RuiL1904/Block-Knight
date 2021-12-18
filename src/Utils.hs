@@ -114,7 +114,7 @@ encontraBaixo c@(x,y) m
     | pecaEsperada Bloco (x,y + 1) m || pecaEsperada Caixa (x,y + 1) m = c
     | otherwise = encontraBaixo (x,y + 1) m -- Caso não seja nem 'Bloco' nem 'Caixa'.
 
-substituiPeca c p m = substituiPecaWrapper c p m m
+substituiPeca c p m = substituiPecaWrapper c p m []
 
 substituiPecaWrapper :: Coordenadas -> Peca -> Mapa -> Mapa -> Mapa
 substituiPecaWrapper (x,0) p (h:t) m = m ++ [substituiPecaNaLinha x p h] ++ t
