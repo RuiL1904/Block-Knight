@@ -19,8 +19,15 @@ import Graphics.Gloss.Juicy (loadJuicy)
 import System.Exit
 
 data EstadoGloss = EstadoGloss {
+    imagens :: Imagens,
     menuAtual :: Menu
     -- Adicionar mais coisas aqui no futuro.
+}
+
+data Imagens = Imagens {
+    mpJogar :: Picture,
+    mpCreditos :: Picture,
+    mpSair :: Picture
 }
 
 data Menu
@@ -32,9 +39,6 @@ data Opcoes
     | Creditos
     | Sair
 
-estadoGlossInicial :: Picture -> EstadoGloss
-estadoGlossInicial p = (EstadoGloss (MenuPrincipal Jogar))
-
 window :: Display
 window = InWindow
     "Block Knight"
@@ -42,37 +46,42 @@ window = InWindow
     (0,0)
 
 fr :: Int
-fr = 60
+fr = 50
 
 reageEventoGloss :: Event -> EstadoGloss -> IO EstadoGloss
-reageEventoGloss (EventKey (SpecialKey KeyDown) Down _ _) e@(EstadoGloss (MenuPrincipal Jogar)) = return $ e{menuAtual = MenuPrincipal Creditos}
-reageEventoGloss (EventKey (SpecialKey KeyDown) Down _ _) e@(EstadoGloss (MenuPrincipal Creditos)) = return $ e{menuAtual = MenuPrincipal Sair}
-reageEventoGloss (EventKey (SpecialKey KeyUp) Down _ _) e@(EstadoGloss (MenuPrincipal Creditos)) = return $ e{menuAtual = MenuPrincipal Jogar}
-reageEventoGloss (EventKey (SpecialKey KeyUp) Down _ _) e@(EstadoGloss (MenuPrincipal Sair)) = return $ e{menuAtual = MenuPrincipal Creditos}
-reageEventoGloss (EventKey (SpecialKey KeyEnter) Down _ _) e@(EstadoGloss (MenuPrincipal Sair)) = exitSuccess
+reageEventoGloss (EventKey (SpecialKey KeyDown) Down _ _) e@(EstadoGloss _ (MenuPrincipal Jogar)) = return $ e{menuAtual = MenuPrincipal Creditos}
+reageEventoGloss (EventKey (SpecialKey KeyDown) Down _ _) e@(EstadoGloss _ (MenuPrincipal Creditos)) = return $ e{menuAtual = MenuPrincipal Sair}
+reageEventoGloss (EventKey (SpecialKey KeyUp) Down _ _) e@(EstadoGloss _ (MenuPrincipal Creditos)) = return $ e{menuAtual = MenuPrincipal Jogar}
+reageEventoGloss (EventKey (SpecialKey KeyUp) Down _ _) e@(EstadoGloss _ (MenuPrincipal Sair)) = return $ e{menuAtual = MenuPrincipal Creditos}
+reageEventoGloss (EventKey (SpecialKey KeyEnter) Down _ _) e@(EstadoGloss _ (MenuPrincipal Sair)) = exitSuccess
 reageEventoGloss _ e = return e
 
 reageTempoGloss :: Float -> EstadoGloss -> IO EstadoGloss
 reageTempoGloss _ e = return e
 
-desenhaEstadoGloss :: EstadoGloss -> IO Picture
-desenhaEstadoGloss e = do
+carregaImagens :: IO Imagens
+carregaImagens = do
     Just mpJogar <- loadJuicy "assets/mp_jogar.png"
     Just mpCreditos <- loadJuicy "assets/mp_creditos.png"
     Just mpSair <- loadJuicy "assets/mp_sair.png"
+    return (Imagens mpJogar mpCreditos mpSair)
+
+desenhaEstadoGloss :: EstadoGloss -> IO Picture
+desenhaEstadoGloss e = do
+    let x = (imagens e)
     case (menuAtual e) of
-        MenuPrincipal Jogar -> return mpJogar
-        MenuPrincipal Creditos -> return mpCreditos
-        MenuPrincipal Sair -> return mpSair
+        MenuPrincipal Jogar -> return $ mpJogar x
+        MenuPrincipal Creditos -> return $ mpCreditos x
+        MenuPrincipal Sair -> return $ mpSair x
 
 main :: IO ()
 main = do
-    Just startImage <- loadJuicy "assets/mp_jogar.png"
+    imagens <- carregaImagens
+    let estadoGlossInicial = (EstadoGloss imagens (MenuPrincipal Jogar))
     playIO window 
         (greyN 0.25) 
         fr
-        (estadoGlossInicial startImage)
+        estadoGlossInicial
         desenhaEstadoGloss
         reageEventoGloss
         reageTempoGloss
-    
