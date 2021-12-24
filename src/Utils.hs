@@ -20,8 +20,6 @@ larguraMapa (p@(f,(x,y)):p'@(f',(x',y')):t)
     | x >= x' = larguraMapa (p:t)
     | otherwise = larguraMapa (p':t)
 
--- | Calcula a altura de um 'Mapa'.
-
 -- | Encontra todas as peças declaradas numa linha.
 pecasNaLinha :: Int -> [(Peca, Coordenadas)] -> [(Peca, Coordenadas)]
 pecasNaLinha _ [] = []
