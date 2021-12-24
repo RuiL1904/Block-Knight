@@ -347,7 +347,7 @@ m13 =
     (Vazio,(4,0))
   ]
 
-m1r, m2r, m3r, m4r, m5r, m6r, m7r, m9r :: Mapa
+m1r, m2r, m3r, m4r, m5r, m6r, m7r, m8r, m9r, m10r, m11r, m12r, m13r :: Mapa
 
 m1r =
   [ [Vazio, Vazio, Vazio, Vazio, Vazio, Vazio, Vazio],
@@ -407,6 +407,20 @@ m7r =
     [Vazio, Bloco, Bloco, Bloco, Bloco, Bloco, Bloco]
   ]
 
+m8r = 
+  [ [Vazio,Bloco,Vazio,Vazio,Vazio,Vazio,Vazio,Vazio,Vazio,Vazio,Vazio,Vazio,Vazio,Vazio,Vazio,Vazio,Vazio,Vazio,Vazio],
+    [Vazio,Bloco,Vazio,Vazio,Vazio,Bloco,Bloco,Bloco,Bloco,Bloco,Bloco,Bloco,Bloco,Bloco,Bloco,Bloco,Bloco,Bloco,Vazio],
+    [Bloco,Vazio,Bloco,Vazio,Bloco,Vazio,Vazio,Vazio,Vazio,Vazio,Vazio,Vazio,Vazio,Vazio,Vazio,Vazio,Vazio,Vazio,Bloco],
+    [Bloco,Vazio,Vazio,Bloco,Vazio,Vazio,Vazio,Vazio,Vazio,Vazio,Vazio,Vazio,Vazio,Vazio,Vazio,Vazio,Vazio,Vazio,Bloco],
+    [Bloco,Vazio,Vazio,Vazio,Vazio,Vazio,Vazio,Vazio,Vazio,Vazio,Vazio,Vazio,Vazio,Vazio,Vazio,Vazio,Vazio,Caixa,Bloco],
+    [Bloco,Vazio,Vazio,Vazio,Vazio,Vazio,Vazio,Vazio,Vazio,Vazio,Vazio,Vazio,Vazio,Vazio,Vazio,Vazio,Caixa,Caixa,Bloco],
+    [Bloco,Vazio,Bloco,Bloco,Bloco,Vazio,Vazio,Vazio,Vazio,Vazio,Vazio,Vazio,Vazio,Bloco,Caixa,Vazio,Bloco,Bloco,Vazio],
+    [Bloco,Vazio,Bloco,Vazio,Bloco,Vazio,Vazio,Vazio,Vazio,Bloco,Vazio,Vazio,Bloco,Bloco,Bloco,Bloco,Bloco,Vazio,Vazio],
+    [Bloco,Vazio,Bloco,Vazio,Bloco,Caixa,Caixa,Vazio,Bloco,Bloco,Vazio,Vazio,Bloco,Vazio,Vazio,Vazio,Vazio,Vazio,Vazio],
+    [Bloco,Porta,Bloco,Vazio,Bloco,Bloco,Bloco,Bloco,Bloco,Bloco,Vazio,Bloco,Bloco,Vazio,Vazio,Vazio,Vazio,Vazio,Vazio],
+    [Bloco,Bloco,Bloco,Vazio,Bloco,Bloco,Vazio,Vazio,Vazio,Bloco,Bloco,Bloco,Vazio,Vazio,Vazio,Vazio,Vazio,Vazio,Vazio]
+  ]
+
 m9r =
   [ [Vazio,Vazio,Vazio,Vazio,Vazio,Bloco,Bloco,Bloco,Vazio,Vazio,Vazio,Vazio,Bloco,Bloco,Bloco,Bloco,Bloco,Bloco,Bloco,Bloco,Bloco,Bloco,Vazio],
     [Vazio,Bloco,Bloco,Bloco,Bloco,Vazio,Vazio,Vazio,Bloco,Bloco,Bloco,Bloco,Vazio,Vazio,Vazio,Vazio,Vazio,Vazio,Vazio,Vazio,Vazio,Vazio,Bloco],
@@ -422,6 +436,45 @@ m9r =
     [Vazio,Bloco,Vazio,Bloco,Vazio,Vazio,Vazio,Vazio,Vazio,Vazio,Vazio,Vazio,Bloco,Vazio,Bloco,Bloco,Vazio,Vazio,Caixa,Caixa,Caixa,Caixa,Bloco],
     [Vazio,Bloco,Bloco,Bloco,Vazio,Vazio,Vazio,Vazio,Vazio,Vazio,Vazio,Vazio,Bloco,Vazio,Bloco,Bloco,Bloco,Bloco,Bloco,Bloco,Bloco,Bloco,Bloco],
     [Vazio,Vazio,Vazio,Vazio,Vazio,Vazio,Vazio,Vazio,Vazio,Vazio,Vazio,Vazio,Bloco,Bloco,Bloco,Vazio,Vazio,Vazio,Vazio,Vazio,Vazio,Vazio,Vazio]
+  ]
+
+m10r =
+  [ [Bloco,Vazio,Vazio,Vazio,Vazio,Vazio,Vazio,Vazio],
+    [Bloco,Vazio,Vazio,Vazio,Vazio,Vazio,Vazio,Bloco],
+    [Bloco,Porta,Vazio,Vazio,Vazio,Vazio,Vazio,Bloco],
+    [Bloco,Bloco,Bloco,Bloco,Bloco,Vazio,Vazio,Bloco],
+    [Bloco,Vazio,Vazio,Vazio,Bloco,Caixa,Vazio,Bloco],
+    [Vazio,Vazio,Bloco,Bloco,Bloco,Bloco,Bloco,Bloco],
+    [Vazio,Bloco,Vazio,Vazio,Vazio,Vazio,Vazio,Vazio]
+  ]
+
+m11r =
+  [ [Vazio,Vazio,Vazio,Vazio,Vazio,Vazio],
+    [Vazio,Vazio,Vazio,Vazio,Vazio,Vazio],
+    [Porta,Vazio,Vazio,Vazio,Vazio,Vazio],
+    [Bloco,Bloco,Bloco,Bloco,Bloco,Bloco],
+    [Vazio,Vazio,Vazio,Vazio,Vazio,Vazio],
+    [Bloco,Bloco,Vazio,Vazio,Bloco,Bloco],
+    [Vazio,Bloco,Caixa,Vazio,Vazio,Bloco],
+    [Vazio,Vazio,Bloco,Bloco,Vazio,Vazio],
+    [Vazio,Vazio,Vazio,Vazio,Vazio,Vazio],
+    [Vazio,Vazio,Vazio,Vazio,Caixa,Vazio],
+    [Vazio,Vazio,Vazio,Vazio,Bloco,Vazio]
+  ]
+
+m12r =
+  [ [Vazio,Vazio,Vazio,Vazio,Vazio],
+    [Caixa,Vazio,Vazio,Vazio,Vazio],
+    [Vazio,Caixa,Vazio,Vazio,Vazio],
+    [Caixa,Bloco,Vazio,Vazio,Porta],
+    [Bloco,Bloco,Bloco,Bloco,Bloco]
+  ]
+
+m13r = 
+  [ [Vazio,Vazio,Vazio,Vazio,Vazio],
+    [Vazio,Vazio,Vazio,Vazio,Vazio],
+    [Porta,Vazio,Vazio,Vazio,Vazio],
+    [Bloco,Bloco,Bloco,Vazio,Bloco]
   ]
 
 m1e1, m1e2 :: Jogo
