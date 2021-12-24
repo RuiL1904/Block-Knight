@@ -12,11 +12,13 @@ import Tarefa2_2021li1g033
 import Tarefa3_2021li1g033
 import Tarefa4_2021li1g033
 import Utils
-import Fixtures
+import Data
+import Audio
 
 import Graphics.Gloss
 import Graphics.Gloss.Interface.IO.Game
 import Graphics.Gloss.Juicy (loadJuicy)
+import Graphics.Gloss.Interface.Environment
 import System.Exit
 
 data EstadoGloss = EstadoGloss {
@@ -44,21 +46,22 @@ data Menu
     | MenuJogar OpcoesJ
 
 data OpcoesP
-    = Jogar Bool -- O 'Bool' dita se o utilizador está ou não dentro do sub-menu.
-    | Creditos Bool
+    = Jogar
+    | Creditos Bool -- O 'Bool' dita se o jogador está ou não dentro do 'Menu' em questão.
     | Sair
 
 data OpcoesJ
-    = Mapa1 Bool -- O 'Bool' dita se o 'Mapa' em questão está ou não a ser jogado.
-    | Mapa2 Bool
-    | Mapa3 Bool
-    | Mapa4 Bool
+    = EscolheMapa Mapas
+    | ModoArcade
+
+data Mapas
+    = Mapa1
+    | Mapa2
+    | Mapa3
+    | Mapa4
 
 window :: Display
-window = InWindow
-    "Block Knight"
-    (1280, 720)
-    (0,0)
+window = FullScreen
 
 fr :: Int
 fr = 50
@@ -66,15 +69,26 @@ fr = 50
 -- | Função necessária para a função 'playIO' - reage a um evento, por parte do utilizador, através do teclado.
 reageEventoGloss :: Event -> EstadoGloss -> IO EstadoGloss
 -- MenuPrincipal
-reageEventoGloss (EventKey (SpecialKey KeyDown) Down _ _) e@(EstadoGloss _ (MenuPrincipal (Jogar False)) _) = return $ e{menuAtual = MenuPrincipal (Creditos False)}
+reageEventoGloss (EventKey (SpecialKey KeyDown) Down _ _) e@(EstadoGloss _ (MenuPrincipal Jogar) _) = return $ e{menuAtual = MenuPrincipal (Creditos False)}
 reageEventoGloss (EventKey (SpecialKey KeyDown) Down _ _) e@(EstadoGloss _ (MenuPrincipal (Creditos False)) _) = return $ e{menuAtual = MenuPrincipal Sair}
-reageEventoGloss (EventKey (SpecialKey KeyUp) Down _ _) e@(EstadoGloss _ (MenuPrincipal (Creditos False)) _) = return $ e{menuAtual = MenuPrincipal (Jogar False)}
+reageEventoGloss (EventKey (SpecialKey KeyUp) Down _ _) e@(EstadoGloss _ (MenuPrincipal (Creditos False)) _) = return $ e{menuAtual = MenuPrincipal Jogar}
 reageEventoGloss (EventKey (SpecialKey KeyUp) Down _ _) e@(EstadoGloss _ (MenuPrincipal Sair) _) = return $ e{menuAtual = MenuPrincipal (Creditos False)}
-reageEventoGloss (EventKey (SpecialKey KeyEnter) Down _ _) e@(EstadoGloss _ (MenuPrincipal Sair) _) = exitSuccess
+reageEventoGloss (EventKey (SpecialKey KeyEnter) Down _ _) e@(EstadoGloss _ (MenuPrincipal Sair) _) = 
+    do killProcess
+       exitSuccess     
 reageEventoGloss (EventKey (SpecialKey KeyEnter) Down _ _) e@(EstadoGloss _ (MenuPrincipal (Creditos False)) _) = return $ e{menuAtual = MenuPrincipal (Creditos True)}
-reageEventoGloss (EventKey _ Down _ _) e@(EstadoGloss _ (MenuPrincipal (Creditos True)) _) = return $ e{menuAtual = MenuPrincipal (Jogar False)}
+reageEventoGloss (EventKey _ Down _ _) e@(EstadoGloss _ (MenuPrincipal (Creditos True)) _) = return $ e{menuAtual = MenuPrincipal Jogar}
 -- MenuJogar
-reageEventoGloss (EventKey (SpecialKey KeyEnter) Down _ _) e@(EstadoGloss _ (MenuPrincipal (Jogar False)) _) = return $ e{menuAtual = MenuPrincipal (Jogar True)}
+reageEventoGloss (EventKey (SpecialKey KeyEnter) Down _ _) e@(EstadoGloss _ (MenuPrincipal Jogar) _) = return $ e{menuAtual = MenuJogar (EscolheMapa Mapa1)}
+reageEventoGloss (EventKey (SpecialKey KeyRight) Down _ _) e@(EstadoGloss _ (MenuJogar _) _) = return $ e{jogo = moveDireita (jogo e)}
+reageEventoGloss (EventKey (SpecialKey KeyLeft) Down _ _) e@(EstadoGloss _ (MenuJogar _) _) = return $ e{jogo = moveEsquerda (jogo e)}
+reageEventoGloss (EventKey (SpecialKey KeyUp) Down _ _) e@(EstadoGloss _ (MenuJogar _) _) = return $ e{jogo = podeTrepar (jogo e)}
+reageEventoGloss (EventKey (SpecialKey KeyDown) Down _ _) e@(EstadoGloss _ (MenuJogar _) _) = return $ e{jogo = interageCaixa (jogo e)}
+reageEventoGloss (EventKey (Char 'r') Down _ _) e@(EstadoGloss _ (MenuJogar _) _) = return $ e{jogo = j2}
+-- Fechar o programa a qualquer altura.
+reageEventoGloss (EventKey (Char 'c') Down _ _) _ =
+    do killProcess
+       exitSuccess
 reageEventoGloss _ e = return e
 
 -- | Função necessária para a função 'playIO' - reage à passagem do tempo.
@@ -97,30 +111,40 @@ carregaImagens = do
 -- | Função necessária para a função 'playIO' - desenha o estado do programa, consoante algumas variáveis.
 desenhaEstadoGloss :: EstadoGloss -> IO Picture
 desenhaEstadoGloss e = do
+    (x,y) <- getScreenSize
+    let x' = (fromIntegral x) / 1920 -- Largura da imagem.
+    let y' = (fromIntegral y) / 1080 -- Altura da imagem.
     let i = (imagens e)
     let (Jogo m _) = (jogo e)
     let m' = desconstroiMapa m
     case (menuAtual e) of
-        MenuPrincipal (Jogar False) -> return $ mpJogar i
-        MenuPrincipal (Creditos False) -> return $ mpCreditos i
-        MenuPrincipal Sair -> return $ mpSair i
-        MenuPrincipal (Creditos True) -> return $ creditos i
-        MenuPrincipal (Jogar True) -> return $ deslocaMapa m' (Pictures [desenhaJogador e, desenhaMapa e m'])
+        MenuPrincipal Jogar -> return $ Scale x' y' $ mpJogar i
+        MenuPrincipal (Creditos False) -> return $ Scale x' y' $ mpCreditos i
+        MenuPrincipal Sair -> return $ Scale x' y' $ mpSair i
+        MenuPrincipal (Creditos True) -> return $ Scale x' y' $ creditos i
+        MenuJogar _ -> return $ deslocaMapa m' (Pictures [desenhaJogador e, desenhaMapa e m'])
     
 desenhaJogador :: EstadoGloss -> Picture
-desenhaJogador e = Translate x' y' $ Scale 0.35 0.35 $ knightRight i -- TODO: Verificar 'dir' e 'eval'; Knight está muito pequeno (alterar no GIMP).
+desenhaJogador e =
+    case eval of
+        True
+            | dir == Este -> Pictures [Translate x' y' $ Scale 0.4 0.4 $ knightRight i, Translate x' (y' + 70) $ Scale 0.17 0.17 $ caixa i]
+            | otherwise -> Pictures [Translate x' y' $ Scale 0.4 0.4 $ knightLeft i, Translate x' (y' + 70) $ Scale 0.17 0.17 $ caixa i]
+        _
+            | dir == Este -> Translate x' y' $ Scale 0.4 0.4 $ knightRight i
+            | otherwise -> Translate x' y' $ Scale 0.4 0.4 $ knightLeft i
     where (Jogo _ (Jogador (x,y) dir eval)) = (jogo e)
           i = (imagens e)
-          x' = (fromIntegral x)
-          y' = (fromIntegral y)
+          x' = (fromIntegral x) * 50
+          y' = (fromIntegral (-y)) * 50
 
 desenhaMapa :: EstadoGloss -> [(Peca, Coordenadas)] -> Picture
 desenhaMapa _ [] = Blank
 desenhaMapa e ((p,(x,y)):t) =
     case p of
-        Bloco -> Pictures [Translate x' y' $ Scale 0.4 0.4 $ bloco i, desenhaMapa e t]   
-        Caixa -> Pictures [Translate x' y' $ Scale 0.2 0.2 $ caixa i, desenhaMapa e t] 
-        Porta -> Pictures [Translate x' y' $ Scale 0.4 0.4 $ porta i, desenhaMapa e t]
+        Bloco -> Pictures [Translate x' y' $ Scale 0.17 0.17 $ bloco i, desenhaMapa e t]   
+        Caixa -> Pictures [Translate x' y' $ Scale 0.17 0.17 $ caixa i, desenhaMapa e t] 
+        Porta -> Pictures [Translate x' y' $ Scale 0.17 0.17 $ porta i, desenhaMapa e t] -- ENCONTRAR UMA PORTA MELHOR (IMPORTANTE)
         _ -> Blank
     where i = (imagens e)
           x' = (fromIntegral x) * 50
@@ -133,8 +157,10 @@ deslocaMapa l i = Translate x y i
 
 main :: IO ()
 main = do
+    -- playMenuPrincipal
     imagens <- carregaImagens
-    let estadoGlossInicial = (EstadoGloss imagens (MenuPrincipal (Jogar False)) (Jogo m9r (Jogador (12 * 50, (-8) * 50) Este True))) -- Mapa de exemplo, alterar depois
+    let jogoInicial = j5
+        estadoGlossInicial = (EstadoGloss imagens (MenuPrincipal Jogar) jogoInicial)
     playIO window 
         (greyN 0.25) 
         fr
@@ -142,4 +168,3 @@ main = do
         desenhaEstadoGloss
         reageEventoGloss
         reageTempoGloss
-  
