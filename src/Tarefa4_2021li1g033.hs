@@ -67,25 +67,25 @@ podeTrepar j =
         Jogo m (Jogador (x,y) Oeste True)
             | pecaEsperada Bloco (x - 1,y) m || pecaEsperada Caixa (x - 1,y) m -> 
                 case (pecaEsperada Vazio (x - 1,y - 1) m || pecaEsperada Porta (x - 1,y - 1) m) && (pecaEsperada Vazio (x - 1,y - 2) m || pecaImpossivel (x - 1,y - 2) m) of
-                    True -> Jogo m (Jogador (x - 1,y - 1) Este True)
+                    True -> Jogo m (Jogador (x - 1,y - 1) Oeste True)
                     _ -> j
             | otherwise -> j
         Jogo m (Jogador (x,y) Oeste False)
             | pecaEsperada Bloco (x - 1,y) m || pecaEsperada Caixa (x - 1,y) m ->
                 case pecaEsperada Vazio (x - 1,y - 1) m || pecaEsperada Porta (x - 1,y - 1) m of
-                    True -> Jogo m (Jogador (x - 1,y - 1) Este False)
+                    True -> Jogo m (Jogador (x - 1,y - 1) Oeste False)
                     _ -> j            
             | otherwise -> j
         Jogo m (Jogador (x,y) Este True)
             | pecaEsperada Bloco (x + 1,y) m || pecaEsperada Caixa (x + 1,y) m ->
                 case (pecaEsperada Vazio (x + 1,y - 1) m || pecaEsperada Porta (x + 1,y - 1) m) && (pecaEsperada Vazio (x + 1,y - 2) m || pecaImpossivel (x + 1,y - 2) m) of
-                    True -> Jogo m (Jogador (x + 1,y - 1) Oeste True)
+                    True -> Jogo m (Jogador (x + 1,y - 1) Este True)
                     _ -> j
             | otherwise -> j
         Jogo m (Jogador (x,y) Este False)
             | pecaEsperada Bloco (x + 1,y) m || pecaEsperada Caixa (x + 1,y) m ->
                 case pecaEsperada Vazio (x + 1,y - 1) m || pecaEsperada Porta (x + 1,y - 1) m of
-                    True -> Jogo m (Jogador (x + 1,y - 1) Oeste False)
+                    True -> Jogo m (Jogador (x + 1,y - 1) Este False)
                     _ -> j
             | otherwise -> j
 
