@@ -30,6 +30,7 @@ data EstadoGloss = EstadoGloss {
 
 data Imagens = Imagens {
     mpJogar :: Picture,
+    mpOpcoes :: Picture,
     mpCreditos :: Picture,
     mpSair :: Picture,
     creditos :: Picture,
@@ -47,18 +48,21 @@ data Menu
 
 data OpcoesP
     = Jogar
+    | Opcoes Bool -- O 'Bool' dita se o jogador está ou não dentro do 'Menu' em questão.
     | Creditos Bool -- O 'Bool' dita se o jogador está ou não dentro do 'Menu' em questão.
     | Sair
 
 data OpcoesJ
     = EscolheMapa Mapas
-    | ModoArcade
+    | ModoArcade Mapas
 
 data Mapas
     = Mapa1
     | Mapa2
     | Mapa3
     | Mapa4
+    | Mapa5
+    | Mapa6
 
 window :: Display
 window = FullScreen
@@ -68,22 +72,27 @@ fr = 50
 
 -- | Função necessária para a função 'playIO' - reage a um evento, por parte do utilizador, através do teclado.
 reageEventoGloss :: Event -> EstadoGloss -> IO EstadoGloss
--- MenuPrincipal
-reageEventoGloss (EventKey (SpecialKey KeyDown) Down _ _) e@(EstadoGloss _ (MenuPrincipal Jogar) _) = return $ e{menuAtual = MenuPrincipal (Creditos False)}
+-- MenuPrincipal.
+reageEventoGloss (EventKey (SpecialKey KeyDown) Down _ _) e@(EstadoGloss _ (MenuPrincipal Jogar) _) = return $ e{menuAtual = MenuPrincipal (Opcoes False)}
+reageEventoGloss (EventKey (SpecialKey KeyDown) Down _ _) e@(EstadoGloss _ (MenuPrincipal (Opcoes False)) _) = return $ e{menuAtual = MenuPrincipal (Creditos False)}
 reageEventoGloss (EventKey (SpecialKey KeyDown) Down _ _) e@(EstadoGloss _ (MenuPrincipal (Creditos False)) _) = return $ e{menuAtual = MenuPrincipal Sair}
-reageEventoGloss (EventKey (SpecialKey KeyUp) Down _ _) e@(EstadoGloss _ (MenuPrincipal (Creditos False)) _) = return $ e{menuAtual = MenuPrincipal Jogar}
 reageEventoGloss (EventKey (SpecialKey KeyUp) Down _ _) e@(EstadoGloss _ (MenuPrincipal Sair) _) = return $ e{menuAtual = MenuPrincipal (Creditos False)}
+reageEventoGloss (EventKey (SpecialKey KeyUp) Down _ _) e@(EstadoGloss _ (MenuPrincipal (Creditos False)) _) = return $ e{menuAtual = MenuPrincipal (Opcoes False)}
+reageEventoGloss (EventKey (SpecialKey KeyUp) Down _ _) e@(EstadoGloss _ (MenuPrincipal (Opcoes False)) _) = return $ e{menuAtual = MenuPrincipal Jogar}  
+reageEventoGloss (EventKey (SpecialKey KeyEnter) Down _ _) e@(EstadoGloss _ (MenuPrincipal Jogar) _) = return $ e{menuAtual = MenuJogar (EscolheMapa Mapa1)}
+reageEventoGloss (EventKey (SpecialKey KeyEnter) Down _ _) e@(EstadoGloss _ (MenuPrincipal (Opcoes False)) _) = return $ e{menuAtual = MenuPrincipal (Opcoes True)}
+reageEventoGloss (EventKey (SpecialKey KeyEnter) Down _ _) e@(EstadoGloss _ (MenuPrincipal (Creditos False)) _) = return $ e{menuAtual = MenuPrincipal (Creditos True)}
 reageEventoGloss (EventKey (SpecialKey KeyEnter) Down _ _) e@(EstadoGloss _ (MenuPrincipal Sair) _) = 
     do killProcess
-       exitSuccess     
-reageEventoGloss (EventKey (SpecialKey KeyEnter) Down _ _) e@(EstadoGloss _ (MenuPrincipal (Creditos False)) _) = return $ e{menuAtual = MenuPrincipal (Creditos True)}
-reageEventoGloss (EventKey _ Down _ _) e@(EstadoGloss _ (MenuPrincipal (Creditos True)) _) = return $ e{menuAtual = MenuPrincipal Jogar}
--- MenuJogar
-reageEventoGloss (EventKey (SpecialKey KeyEnter) Down _ _) e@(EstadoGloss _ (MenuPrincipal Jogar) _) = return $ e{menuAtual = MenuJogar (EscolheMapa Mapa1)}
+       exitSuccess
+reageEventoGloss (EventKey _ Down _ _) e@(EstadoGloss _ (MenuPrincipal (Creditos True)) _) = return $ e{menuAtual = MenuPrincipal Jogar} 
+-- MenuJogar.
 reageEventoGloss (EventKey (SpecialKey KeyRight) Down _ _) e@(EstadoGloss _ (MenuJogar _) _) = return $ e{jogo = moveDireita (jogo e)}
 reageEventoGloss (EventKey (SpecialKey KeyLeft) Down _ _) e@(EstadoGloss _ (MenuJogar _) _) = return $ e{jogo = moveEsquerda (jogo e)}
 reageEventoGloss (EventKey (SpecialKey KeyUp) Down _ _) e@(EstadoGloss _ (MenuJogar _) _) = return $ e{jogo = podeTrepar (jogo e)}
 reageEventoGloss (EventKey (SpecialKey KeyDown) Down _ _) e@(EstadoGloss _ (MenuJogar _) _) = return $ e{jogo = interageCaixa (jogo e)}
+reageEventoGloss (EventKey (Char 'd') Down _ _) e@(EstadoGloss _ (MenuJogar _) (Jogo m (Jogador c Oeste eval))) = return $ e{jogo = (Jogo m (Jogador c Este eval))}
+reageEventoGloss (EventKey (Char 'e') Down _ _) e@(EstadoGloss _ (MenuJogar _) (Jogo m (Jogador c Este eval))) = return $ e{jogo = (Jogo m (Jogador c Oeste eval))}
 reageEventoGloss (EventKey (Char 'r') Down _ _) e@(EstadoGloss _ (MenuJogar _) _) = return $ e{jogo = j2}
 -- Fechar o programa a qualquer altura.
 reageEventoGloss (EventKey (Char 'c') Down _ _) _ =
@@ -97,16 +106,20 @@ reageTempoGloss _ e = return e
 
 carregaImagens :: IO Imagens
 carregaImagens = do
-    Just mpJogar <- loadJuicy "assets/mp_jogar.png"
-    Just mpCreditos <- loadJuicy "assets/mp_creditos.png"
-    Just mpSair <- loadJuicy "assets/mp_sair.png"
-    Just creditos <- loadJuicy "assets/creditos.png"
+    -- Menu Principal.
+    Just mpJogar <- loadJuicy "assets/mpJogar.jpg"
+    Just mpOpcoes <- loadJuicy "assets/mpOpcoes.jpg"
+    Just mpCreditos <- loadJuicy "assets/mpCreditos.jpg"
+    Just mpSair <- loadJuicy "assets/mpSair.jpg"
+    -- Opções do Menu Principal.
+    Just creditos <- loadJuicy "assets/creditos.jpg"
+    -- Outros.
     Just bloco <- loadJuicy "assets/bloco.png"
     Just caixa <- loadJuicy "assets/caixa.png"
     Just porta <- loadJuicy "assets/porta.png"
-    Just knightLeft <- loadJuicy "assets/knight_left.png"
-    Just knightRight <- loadJuicy "assets/knight_right.png"
-    return (Imagens mpJogar mpCreditos mpSair creditos bloco caixa porta knightLeft knightRight)
+    Just knightLeft <- loadJuicy "assets/knightLeft.png"
+    Just knightRight <- loadJuicy "assets/knightRight.png"
+    return (Imagens mpJogar mpOpcoes mpCreditos mpSair creditos bloco caixa porta knightLeft knightRight)
 
 -- | Função necessária para a função 'playIO' - desenha o estado do programa, consoante algumas variáveis.
 desenhaEstadoGloss :: EstadoGloss -> IO Picture
@@ -119,6 +132,7 @@ desenhaEstadoGloss e = do
     let m' = desconstroiMapa m
     case (menuAtual e) of
         MenuPrincipal Jogar -> return $ Scale x' y' $ mpJogar i
+        MenuPrincipal (Opcoes False) -> return $ Scale x' y' $ mpOpcoes i
         MenuPrincipal (Creditos False) -> return $ Scale x' y' $ mpCreditos i
         MenuPrincipal Sair -> return $ Scale x' y' $ mpSair i
         MenuPrincipal (Creditos True) -> return $ Scale x' y' $ creditos i
@@ -159,10 +173,10 @@ main :: IO ()
 main = do
     -- playMenuPrincipal
     imagens <- carregaImagens
-    let jogoInicial = j5
+    let jogoInicial = j6
         estadoGlossInicial = (EstadoGloss imagens (MenuPrincipal Jogar) jogoInicial)
     playIO window 
-        (greyN 0.25) 
+        (greyN 0.5) 
         fr
         estadoGlossInicial
         desenhaEstadoGloss
