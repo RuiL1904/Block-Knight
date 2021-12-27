@@ -21,14 +21,17 @@ import Graphics.Gloss.Juicy (loadJuicy)
 import Graphics.Gloss.Interface.Environment
 import System.Exit
 
+-- | O estado do programa.
 data EstadoGloss = EstadoGloss {
     imagens :: Imagens, -- ^ O conjunto das 'Imagens' necessárias ao programa.
-    menuAtual :: Menu, -- ^ O menu em que o utilizador está atualmente.
+    menuAtual :: Menu, -- ^ O 'Menu' em que o utilizador está atualmente.
     jogo :: Jogo -- ^ O 'Jogo' atual.
     -- Adicionar mais coisas aqui no futuro.
 }
 
+-- | O conjunto das imagens inerentes ao programa.
 data Imagens = Imagens {
+    background :: Picture,
     mpJogar :: Picture,
     mpOpcoes :: Picture,
     mpCreditos :: Picture,
@@ -42,36 +45,39 @@ data Imagens = Imagens {
     -- Adicionar as imagens necessárias aqui no futuro.
 }
 
+-- | Os menus disponíveis.
 data Menu
     = MenuPrincipal OpcoesP
     | MenuJogar OpcoesJ
 
+-- | As opções do 'MenuPrincipal' disponíveis.
 data OpcoesP
     = Jogar
     | Opcoes Bool -- O 'Bool' dita se o jogador está ou não dentro do 'Menu' em questão.
     | Creditos Bool -- O 'Bool' dita se o jogador está ou não dentro do 'Menu' em questão.
     | Sair
 
+-- | As opções do 'MenuJogar' disponíveis.
 data OpcoesJ
     = EscolheMapa Mapas
     | ModoArcade Mapas
 
-data Mapas
-    = Mapa1
-    | Mapa2
-    | Mapa3
-    | Mapa4
-    | Mapa5
-    | Mapa6
+-- | O conjunto dos mapas disponíveis para jogar.
+data Mapas = Mapa1 | Mapa2 | Mapa3 | Mapa4 | Mapa5 | Mapa6 | Mapa7 | Mapa8
 
+-- | Define a dimensão da janela (neste caso FullScreen).
 window :: Display
 window = FullScreen
 
+-- | Uma constante que define a taxa de atualização do programa - quantas vezes a função 'reageTempoGloss' é chamada por segundo.
 fr :: Int
 fr = 50
 
--- | Função necessária para a função 'playIO' - reage a um evento, por parte do utilizador, através do teclado.
-reageEventoGloss :: Event -> EstadoGloss -> IO EstadoGloss
+-- | Função que reage a um evento, por parte do utilizador, através do teclado ou do rato.
+reageEventoGloss :: 
+    Event -> -- ^ Um evento, por parte do utilizador, através do teclado ou do rato, por exemplo: clicar na tecla Enter.
+    EstadoGloss -> 
+    IO EstadoGloss
 -- MenuPrincipal.
 reageEventoGloss (EventKey (SpecialKey KeyDown) Down _ _) e@(EstadoGloss _ (MenuPrincipal Jogar) _) = return $ e{menuAtual = MenuPrincipal (Opcoes False)}
 reageEventoGloss (EventKey (SpecialKey KeyDown) Down _ _) e@(EstadoGloss _ (MenuPrincipal (Opcoes False)) _) = return $ e{menuAtual = MenuPrincipal (Creditos False)}
@@ -79,7 +85,9 @@ reageEventoGloss (EventKey (SpecialKey KeyDown) Down _ _) e@(EstadoGloss _ (Menu
 reageEventoGloss (EventKey (SpecialKey KeyUp) Down _ _) e@(EstadoGloss _ (MenuPrincipal Sair) _) = return $ e{menuAtual = MenuPrincipal (Creditos False)}
 reageEventoGloss (EventKey (SpecialKey KeyUp) Down _ _) e@(EstadoGloss _ (MenuPrincipal (Creditos False)) _) = return $ e{menuAtual = MenuPrincipal (Opcoes False)}
 reageEventoGloss (EventKey (SpecialKey KeyUp) Down _ _) e@(EstadoGloss _ (MenuPrincipal (Opcoes False)) _) = return $ e{menuAtual = MenuPrincipal Jogar}  
-reageEventoGloss (EventKey (SpecialKey KeyEnter) Down _ _) e@(EstadoGloss _ (MenuPrincipal Jogar) _) = return $ e{menuAtual = MenuJogar (EscolheMapa Mapa1)}
+reageEventoGloss (EventKey (SpecialKey KeyEnter) Down _ _) e@(EstadoGloss _ (MenuPrincipal Jogar) _) = 
+    do killProcess
+       return $ e{menuAtual = MenuJogar (EscolheMapa Mapa1)}
 reageEventoGloss (EventKey (SpecialKey KeyEnter) Down _ _) e@(EstadoGloss _ (MenuPrincipal (Opcoes False)) _) = return $ e{menuAtual = MenuPrincipal (Opcoes True)}
 reageEventoGloss (EventKey (SpecialKey KeyEnter) Down _ _) e@(EstadoGloss _ (MenuPrincipal (Creditos False)) _) = return $ e{menuAtual = MenuPrincipal (Creditos True)}
 reageEventoGloss (EventKey (SpecialKey KeyEnter) Down _ _) e@(EstadoGloss _ (MenuPrincipal Sair) _) = 
@@ -100,12 +108,17 @@ reageEventoGloss (EventKey (Char 'c') Down _ _) _ =
        exitSuccess
 reageEventoGloss _ e = return e
 
--- | Função necessária para a função 'playIO' - reage à passagem do tempo.
-reageTempoGloss :: Float -> EstadoGloss -> IO EstadoGloss
+-- | Função que reage à passagem do tempo.
+reageTempoGloss :: 
+    Float -> -- ^ Um 'Float' que contabiliza o tempo que passou desde a última chamada da função 'reageTempoGloss'.
+    EstadoGloss ->
+    IO EstadoGloss
 reageTempoGloss _ e = return e
 
+-- Carrega todas as imagens para o data type 'Imagens'.
 carregaImagens :: IO Imagens
 carregaImagens = do
+    Just background <- loadJuicy "assets/background.jpg"
     -- Menu Principal.
     Just mpJogar <- loadJuicy "assets/mpJogar.jpg"
     Just mpOpcoes <- loadJuicy "assets/mpOpcoes.jpg"
@@ -119,9 +132,9 @@ carregaImagens = do
     Just porta <- loadJuicy "assets/porta.png"
     Just knightLeft <- loadJuicy "assets/knightLeft.png"
     Just knightRight <- loadJuicy "assets/knightRight.png"
-    return (Imagens mpJogar mpOpcoes mpCreditos mpSair creditos bloco caixa porta knightLeft knightRight)
+    return (Imagens background mpJogar mpOpcoes mpCreditos mpSair creditos bloco caixa porta knightLeft knightRight)
 
--- | Função necessária para a função 'playIO' - desenha o estado do programa, consoante algumas variáveis.
+-- | Desenha o estado do programa, consoante algumas variáveis - transforma um estado numa 'Picture'.
 desenhaEstadoGloss :: EstadoGloss -> IO Picture
 desenhaEstadoGloss e = do
     (x,y) <- getScreenSize
@@ -136,8 +149,9 @@ desenhaEstadoGloss e = do
         MenuPrincipal (Creditos False) -> return $ Scale x' y' $ mpCreditos i
         MenuPrincipal Sair -> return $ Scale x' y' $ mpSair i
         MenuPrincipal (Creditos True) -> return $ Scale x' y' $ creditos i
-        MenuJogar _ -> return $ deslocaMapa m' (Pictures [desenhaJogador e, desenhaMapa e m'])
-    
+        MenuJogar _ -> return $ Pictures [background i, deslocaMapa m' $ Pictures [desenhaMapa e m', desenhaJogador e]]
+
+-- Função auxiliar de 'desenhaEstadoGloss' - desenha o 'Jogador'.
 desenhaJogador :: EstadoGloss -> Picture
 desenhaJogador e =
     case eval of
@@ -152,31 +166,35 @@ desenhaJogador e =
           x' = (fromIntegral x) * 50
           y' = (fromIntegral (-y)) * 50
 
+-- Função auxiliar de 'desenhaEstadoGloss' - desenha o 'Mapa'.
 desenhaMapa :: EstadoGloss -> [(Peca, Coordenadas)] -> Picture
 desenhaMapa _ [] = Blank
 desenhaMapa e ((p,(x,y)):t) =
     case p of
         Bloco -> Pictures [Translate x' y' $ Scale 0.17 0.17 $ bloco i, desenhaMapa e t]   
         Caixa -> Pictures [Translate x' y' $ Scale 0.17 0.17 $ caixa i, desenhaMapa e t] 
-        Porta -> Pictures [Translate x' y' $ Scale 0.17 0.17 $ porta i, desenhaMapa e t] -- ENCONTRAR UMA PORTA MELHOR (IMPORTANTE)
+        Porta -> Pictures [Translate x' y' $ Scale 0.4 0.4 $ porta i, desenhaMapa e t] -- ENCONTRAR UMA PORTA MELHOR (IMPORTANTE)
         _ -> Blank
     where i = (imagens e)
           x' = (fromIntegral x) * 50
           y' = (fromIntegral (-y)) * 50
 
+-- Função auxiliar de 'desenhaEstadoGloss' - centra o 'Mapa' nas coordenadas (0,0).
 deslocaMapa :: [(Peca, Coordenadas)] -> Picture -> Picture
 deslocaMapa l i = Translate x y i
-    where x = (-1.0) * (fromIntegral (div ((larguraMapa l) * 50) 2))
-          y = (fromIntegral (div ((alturaMapa l) * 50) 2))
+    where x =  (-1.0) * (fromIntegral (div l' 2))
+          y = (fromIntegral (div a 2))
+          l' = (larguraMapa l) * 50
+          a = (alturaMapa l) * 50
 
 main :: IO ()
 main = do
-    -- playMenuPrincipal
+    playMenuPrincipal
     imagens <- carregaImagens
-    let jogoInicial = j6
+    let jogoInicial = j1
         estadoGlossInicial = (EstadoGloss imagens (MenuPrincipal Jogar) jogoInicial)
     playIO window 
-        (greyN 0.5) 
+        (greyN 0.32) 
         fr
         estadoGlossInicial
         desenhaEstadoGloss
