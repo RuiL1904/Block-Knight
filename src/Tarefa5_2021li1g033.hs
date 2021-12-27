@@ -173,7 +173,7 @@ main :: IO ()
 main = do
     -- playMenuPrincipal
     imagens <- carregaImagens
-    let jogoInicial = j6
+    let jogoInicial = j10
         estadoGlossInicial = (EstadoGloss imagens (MenuPrincipal Jogar) jogoInicial)
     playIO window 
         (greyN 0.5) 
