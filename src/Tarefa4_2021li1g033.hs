@@ -96,13 +96,13 @@ interageCaixa ::
 interageCaixa j =
     case j of
         Jogo m (Jogador (x,y) Oeste True)
-            | pecaEsperada Vazio (x - 1,y - 1) m -> Jogo (substituiPeca (encontraBaixo (x - 1,y) m) Caixa m) (Jogador (x,y) Oeste False)
+            | pecaEsperada Vazio (x - 1,y - 1) m -> Jogo (substituiPeca (encontraBaixo (x - 1,y - 1) m) Caixa m) (Jogador (x,y) Oeste False)
             | otherwise -> j
         Jogo m (Jogador (x,y) Oeste False)
             | pecaEsperada Caixa (x - 1,y) m && pecaEsperada Vazio (x - 1,y - 1) m && pecaEsperada Vazio (x,y - 1) m -> Jogo (substituiPeca (x - 1,y) Vazio m) (Jogador (x,y) Oeste True)
             | otherwise -> j
         Jogo m (Jogador (x,y) Este True)
-            | pecaEsperada Vazio (x + 1,y - 1) m -> Jogo (substituiPeca (encontraBaixo (x + 1,y) m) Caixa m) (Jogador (x,y) Este False)
+            | pecaEsperada Vazio (x + 1,y - 1) m -> Jogo (substituiPeca (encontraBaixo (x + 1,y - 1) m) Caixa m) (Jogador (x,y) Este False)
             | otherwise -> j
         Jogo m (Jogador (x,y) Este False)
             | pecaEsperada Caixa (x + 1,y) m && pecaEsperada Vazio (x + 1,y - 1) m && pecaEsperada Vazio (x,y - 1) m -> Jogo (substituiPeca (x + 1,y) Vazio m) (Jogador (x,y) Este True)
