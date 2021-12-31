@@ -123,3 +123,10 @@ substituiPecaNaLinha x p l = substituiPecaNaLinhaWrapper x p l []
 substituiPecaNaLinhaWrapper :: Int -> Peca -> [Peca] -> [Peca] -> [Peca]
 substituiPecaNaLinhaWrapper 0 p (h:t) l = l ++ [p] ++ t
 substituiPecaNaLinhaWrapper x p (h:t) l = substituiPecaNaLinhaWrapper (x - 1) p t (l ++ [h])
+
+eJust :: Maybe a -> Bool
+eJust Nothing = False
+eJust _ = True
+
+retiraDoJust :: Maybe a -> a
+retiraDoJust (Just a) = a
