@@ -84,7 +84,7 @@ reageEventoMenuPrincipal (EventKey (SpecialKey KeyUp) Down _ _) e@(EstadoGloss _
        return $ e{menuAtual = obtemMenu Cima e}
 reageEventoMenuPrincipal (EventKey (SpecialKey KeyDown) Down _ _) e@(EstadoGloss _ _ _ _) = 
     do playMenuChange
-       return $ e{menuAtual = obtemMenu Baixo e} 
+       return $ e{menuAtual = obtemMenu Baixo e}         
 reageEventoMenuPrincipal (EventKey (Char 'q') Down _ _) _ =
     do killProcess
        exitSuccess
@@ -182,6 +182,11 @@ reageEventoModoArcade (EventKey (SpecialKey KeyUp) Down _ _) e@(EstadoGloss _ (M
     do let novoJ@(Jogo _ (Jogador novoC _ _)) = podeTrepar j
        if encontraPorta (moveJogador j AndarDireita) == novoC then return $ e{menuAtual = MenuJogar (ModoArcade True (x + 1)), jogo = obtemNivel (x + 1)} else return $ e{jogo = novoJ}
 reageEventoModoArcade (EventKey (SpecialKey KeyDown) Down _ _) e@(EstadoGloss _ (MenuJogar (ModoArcade True x) ) j _) = return $ e{jogo = interageCaixa j}
+reageEventoModoArcade (EventKey (Char 'g') Down _ _) e =
+     do let j = (jogo e)
+        writeFile "saveGame.txt" (show j)-- grava coordenadas em ficheiro ao pressionar tecla "g"
+        killProcess
+        exitSuccess 
 reageEventoModoArcade (EventKey (Char 'q') Down _ _) _ =
     do killProcess
        exitSuccess                   
@@ -192,6 +197,11 @@ reageEventoCarregarJogo (EventKey (SpecialKey KeyUp) Down _ _) e@(EstadoGloss _ 
     do playMenuChange
        return $ e{menuAtual = MenuJogar (ModoArcade False 0)}
 reageEventoCarregarJogo (EventKey (SpecialKey KeyEnter) Down _ _) e@(EstadoGloss _ (MenuJogar (CarregarJogo False)) _ _) = return $ e{menuAtual = MenuJogar (CarregarJogo True)}
+reageEventoCarregarJogo (EventKey (Char 'g') Down _ _) e =
+     do let j = (jogo e)
+        writeFile "saveGame.txt" (show j)-- grava coordenadas em ficheiro ao pressionar tecla "g"
+        killProcess
+        exitSuccess 
 reageEventoCarregarJogo (EventKey (Char 'q') Down _ _) _ =
     do killProcess
        exitSuccess      
