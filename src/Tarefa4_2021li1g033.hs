@@ -9,8 +9,9 @@ O objetivo desta tarefa é implementar a função 'moveJogador' que aplica o efe
 module Tarefa4_2021li1g033 where
 
 import LI12122
-import Utils
 import Tarefa3_2021li1g033
+import Utils
+import Niveis
 
 -- | Verifica se o 'Movimento' é aplicável.
 moveJogador :: 

@@ -12,25 +12,13 @@ import Tarefa2_2021li1g033
 import Tarefa3_2021li1g033
 import Tarefa4_2021li1g033
 import Utils
+import Niveis
 
 -- | Uma Rose Tree.
 data Tree a = Node a [Tree a]
-
--- Mapas para teste.
-j1 :: Jogo
-j1 = Jogo m1 (Jogador (6, 0) Oeste False)
-
-m1 :: Mapa
-m1 =
-    [ [Vazio, Vazio, Vazio, Vazio, Vazio, Vazio, Vazio],
-      [Vazio, Vazio, Vazio, Vazio, Vazio, Vazio, Bloco],
-      [Vazio, Vazio, Vazio, Vazio, Vazio, Vazio, Bloco],
-      [Porta, Vazio, Vazio, Vazio, Caixa, Vazio, Bloco],
-      [Bloco, Bloco, Bloco, Bloco, Bloco, Bloco, Bloco]
-    ]
   
 main :: IO ()
-main = print $ resolveJogo 20 j1
+main = print $ resolveJogo 30 j1
 
 resolveJogo :: Int -> Jogo -> Maybe [Movimento]
 resolveJogo x jogo = resolveJogoTree x (Node jogo [])
