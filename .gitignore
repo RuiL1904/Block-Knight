@@ -25,3 +25,6 @@ cabal.project.local~
 .vscode/
 src/Tarefa5_2021li1g033
 src/Tarefa6_2021li1g033
+src/Teste
+src/Teste.hs
+assets/a.gif
