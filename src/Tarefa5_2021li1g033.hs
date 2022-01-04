@@ -9,12 +9,13 @@ module Main where
 import LI12122
 import Tarefa1_2021li1g033
 import Tarefa2_2021li1g033
-import Tarefa3_2021li1g033
 import Tarefa4_2021li1g033
 
 import Utils
 import Assets
-import Data
+import Niveis
+import HighScore
+import SaveGame
 import Audio
 
 import Graphics.Gloss
@@ -30,7 +31,9 @@ data EstadoGloss = EstadoGloss {
     imagens :: Imagens, -- ^ O conjunto das 'Imagens' necessárias ao programa.
     menuAtual :: Menu, -- ^ O 'Menu' em que o utilizador está atualmente.
     jogo :: Jogo, -- ^ O 'Jogo' atual.
-    tempo :: Float -- ^ O valor em segundos desde o início do programa.
+    tempo :: Float, -- ^ O valor em segundos desde o início do programa.
+    highScore :: HighScores, -- ^ A lista da pontuação mais alta obtida em cada um dos níveis.
+    scoreAtual :: Int -- ^ A pontuação atual no 'Jogo' atual.
     -- Adicionar mais coisas, inerentes ao estado, aqui no futuro.
 }
 
@@ -68,23 +71,23 @@ reageEventoGloss ::
     Event -> -- ^ Um evento, por parte do utilizador, através do teclado ou do rato, por exemplo: clicar na tecla Enter.
     EstadoGloss -> 
     IO EstadoGloss
-reageEventoGloss ev e@(EstadoGloss _ (MenuPrincipal _) _ _) = reageEventoMenuPrincipal ev e
-reageEventoGloss ev e@(EstadoGloss _ (MenuJogar _) _ _) = reageEventoMenuJogar ev e
+reageEventoGloss ev e@(EstadoGloss _ (MenuPrincipal _) _ _ _ _) = reageEventoMenuPrincipal ev e
+reageEventoGloss ev e@(EstadoGloss _ (MenuJogar _) _ _ _ _) = reageEventoMenuJogar ev e
 
 reageEventoMenuPrincipal :: Event -> EstadoGloss -> IO EstadoGloss
-reageEventoMenuPrincipal (EventKey (SpecialKey KeyEnter) Down _ _) e@(EstadoGloss _ (MenuPrincipal Jogar) _ _) = return $ e{menuAtual = MenuJogar (EscolheMapa False 0)}
-reageEventoMenuPrincipal (EventKey (SpecialKey KeyEnter) Down _ _) e@(EstadoGloss _ (MenuPrincipal (Opcoes False)) _ _) = return $ e{menuAtual = MenuPrincipal (Opcoes True)}
-reageEventoMenuPrincipal (EventKey (SpecialKey KeyEnter) Down _ _) e@(EstadoGloss _ (MenuPrincipal (Creditos False)) _ _) = return $ e{menuAtual = MenuPrincipal (Creditos True)}
-reageEventoMenuPrincipal (EventKey (SpecialKey KeyEnter) Down _ _) e@(EstadoGloss _ (MenuPrincipal Sair) _ _) =
+reageEventoMenuPrincipal (EventKey (SpecialKey KeyEnter) Down _ _) e@(EstadoGloss _ (MenuPrincipal Jogar) _ _ _ _) = return $ e{menuAtual = MenuJogar (EscolheMapa False 0)}
+reageEventoMenuPrincipal (EventKey (SpecialKey KeyEnter) Down _ _) e@(EstadoGloss _ (MenuPrincipal (Opcoes False)) _ _ _ _) = return $ e{menuAtual = MenuPrincipal (Opcoes True)}
+reageEventoMenuPrincipal (EventKey (SpecialKey KeyEnter) Down _ _) e@(EstadoGloss _ (MenuPrincipal (Creditos False)) _ _ _ _) = return $ e{menuAtual = MenuPrincipal (Creditos True)}
+reageEventoMenuPrincipal (EventKey (SpecialKey KeyEnter) Down _ _) e@(EstadoGloss _ (MenuPrincipal Sair) _ _ _ _) =
     do killProcess
        exitSuccess
-reageEventoMenuPrincipal (EventKey _ Down _ _) e@(EstadoGloss _ (MenuPrincipal (Creditos True)) _ _) = return $ e{menuAtual = MenuPrincipal (Creditos False)}
-reageEventoMenuPrincipal (EventKey (SpecialKey KeyUp) Down _ _) e@(EstadoGloss _ _ _ _) = 
+reageEventoMenuPrincipal (EventKey _ Down _ _) e@(EstadoGloss _ (MenuPrincipal (Creditos True)) _ _ _ _) = return $ e{menuAtual = MenuPrincipal (Creditos False)}
+reageEventoMenuPrincipal (EventKey (SpecialKey KeyUp) Down _ _) e@(EstadoGloss _ _ _ _ _ _) = 
     do playMenuChange
        return $ e{menuAtual = obtemMenu Cima e}
-reageEventoMenuPrincipal (EventKey (SpecialKey KeyDown) Down _ _) e@(EstadoGloss _ _ _ _) = 
+reageEventoMenuPrincipal (EventKey (SpecialKey KeyDown) Down _ _) e@(EstadoGloss _ _ _ _ _ _) = 
     do playMenuChange
-       return $ e{menuAtual = obtemMenu Baixo e}         
+       return $ e{menuAtual = obtemMenu Baixo e} 
 reageEventoMenuPrincipal (EventKey (Char 'q') Down _ _) _ =
     do killProcess
        exitSuccess
@@ -108,55 +111,92 @@ obtemMenu dir e =
           menus = [MenuPrincipal Jogar, MenuPrincipal (Opcoes False), MenuPrincipal (Creditos False), MenuPrincipal Sair]
 
 reageEventoMenuJogar :: Event -> EstadoGloss -> IO EstadoGloss
-reageEventoMenuJogar ev e@(EstadoGloss _ (MenuJogar (EscolheMapa _ _)) _ _) = reageEventoEscolheMapa ev e
-reageEventoMenuJogar ev e@(EstadoGloss _ (MenuJogar (ModoArcade _ _)) _ _) = reageEventoModoArcade ev e
-reageEventoMenuJogar ev e@(EstadoGloss _ (MenuJogar (CarregarJogo _)) _ _) = reageEventoCarregarJogo ev e
+reageEventoMenuJogar ev e@(EstadoGloss _ (MenuJogar (EscolheMapa _ _)) _ _ _ _) = reageEventoEscolheMapa ev e
+reageEventoMenuJogar ev e@(EstadoGloss _ (MenuJogar (ModoArcade _ _)) _ _ _ _) = reageEventoModoArcade ev e
+reageEventoMenuJogar ev e@(EstadoGloss _ (MenuJogar (CarregarJogo _)) _ _ _ _) = reageEventoCarregarJogo ev e
 reageEventoMenuJogar (EventKey (Char 'q') Down _ _) _ =
     do killProcess
        exitSuccess
 reageEventoMenuJogar _ e = return e
 
 reageEventoEscolheMapa :: Event -> EstadoGloss -> IO EstadoGloss
-reageEventoEscolheMapa (EventKey (SpecialKey KeyEnter) Down _ _) e@(EstadoGloss _ (MenuJogar (EscolheMapa False 0)) _ _) = return $ e{menuAtual = MenuJogar (EscolheMapa False 1)}
-reageEventoEscolheMapa (EventKey (SpecialKey KeyRight) Down _ _) e@(EstadoGloss _ (MenuJogar (EscolheMapa True x)) j _) = return $ e{jogo = moveDireita j}
-reageEventoEscolheMapa (EventKey (SpecialKey KeyLeft) Down _ _) e@(EstadoGloss _ (MenuJogar (EscolheMapa True x)) j _) = return $ e{jogo = moveEsquerda j}
-reageEventoEscolheMapa (EventKey (SpecialKey KeyUp) Down _ _) e@(EstadoGloss _ (MenuJogar (EscolheMapa True x)) j _) = return $ e{jogo = podeTrepar j}
-reageEventoEscolheMapa (EventKey (SpecialKey KeyDown) Down _ _) e@(EstadoGloss _ (MenuJogar (EscolheMapa True x)) j _) = return $ e{jogo = interageCaixa j}
-reageEventoEscolheMapa (EventKey (Char 'r') Down _ _) e@(EstadoGloss _ (MenuJogar (EscolheMapa True x)) _ _) = return $ e{jogo = obtemNivel x}
-reageEventoEscolheMapa (EventKey (SpecialKey KeyDown) Down _ _) e@(EstadoGloss _ (MenuJogar (EscolheMapa False 0)) _ _)= 
+reageEventoEscolheMapa (EventKey (SpecialKey KeyEnter) Down _ _) e@(EstadoGloss _ (MenuJogar (EscolheMapa False 0)) _ _ _ _) = return $ e{menuAtual = MenuJogar (EscolheMapa False 1)}
+reageEventoEscolheMapa (EventKey (SpecialKey KeyRight) Down _ _) e@(EstadoGloss _ (MenuJogar (EscolheMapa True x)) j _ hs sa) = 
+    do let novoJ@(Jogo _ (Jogador novoC _ _)) = moveDireita j
+       if encontraPorta (moveJogador j AndarDireita) == novoC then
+           do let novoHS = (verificaHScore x e{scoreAtual = sa + 1} hs)
+              escreverFicheiro novoHS
+              return $ e{menuAtual = MenuJogar (EscolheMapa False 1), jogo = obtemNivel x, highScore = novoHS, scoreAtual = 0} else if novoJ /= j then return $ e{jogo = novoJ, scoreAtual = sa + 1} else return e
+reageEventoEscolheMapa (EventKey (SpecialKey KeyLeft) Down _ _) e@(EstadoGloss _ (MenuJogar (EscolheMapa True x)) j _ hs sa) = 
+    do let novoJ@(Jogo _ (Jogador novoC _ _)) = moveEsquerda j
+       if encontraPorta (moveJogador j AndarEsquerda) == novoC && novoJ /= j then
+           do let novoHS = (verificaHScore x e{scoreAtual = sa + 1} hs)
+              escreverFicheiro novoHS
+              return $ e{menuAtual = MenuJogar (EscolheMapa False 1), jogo = obtemNivel x, highScore = novoHS, scoreAtual = 0} else if novoJ /= j then return $ e{jogo = novoJ, scoreAtual = sa + 1} else return e
+reageEventoEscolheMapa (EventKey (SpecialKey KeyUp) Down _ _) e@(EstadoGloss _ (MenuJogar (EscolheMapa True x)) j _ hs sa) = 
+    do let novoJ@(Jogo _ (Jogador novoC _ _)) = podeTrepar j
+       if encontraPorta (moveJogador j Trepar) == novoC && novoJ /= j then
+           do let novoHS = (verificaHScore x e{scoreAtual = sa + 1} hs)
+              escreverFicheiro novoHS
+              return $ e{menuAtual = MenuJogar (EscolheMapa False 1), jogo = obtemNivel x, highScore = novoHS, scoreAtual = 0} else if novoJ /= j then return $ e{jogo = novoJ, scoreAtual = sa + 1} else return e
+reageEventoEscolheMapa (EventKey (SpecialKey KeyDown) Down _ _) e@(EstadoGloss _ (MenuJogar (EscolheMapa True x)) j _ _ sa) = 
+    do let novoJ@(Jogo _ (Jogador _ _ _)) = interageCaixa j
+       if novoJ /= j then return $ e{jogo = interageCaixa j, scoreAtual = sa + 1} else return e
+reageEventoEscolheMapa (EventKey (Char 'r') Down _ _) e@(EstadoGloss _ (MenuJogar (EscolheMapa True x)) _ _ _ _) = return $ e{jogo = obtemNivel x, scoreAtual = 0}
+reageEventoEscolheMapa (EventKey (SpecialKey KeyDown) Down _ _) e@(EstadoGloss _ (MenuJogar (EscolheMapa False 0)) _ _ _ _)= 
     do playMenuChange
        return $ e{menuAtual = MenuJogar (ModoArcade False 0)}      
-reageEventoEscolheMapa (EventKey (SpecialKey KeyEnter) Down _ _) e@ (EstadoGloss _ (MenuJogar (EscolheMapa False x)) _ _) = 
+reageEventoEscolheMapa (EventKey (SpecialKey KeyEnter) Down _ _ ) e@ (EstadoGloss _ (MenuJogar (EscolheMapa False x)) _ _ _ _) = 
     do killProcess
        return $ e{menuAtual = MenuJogar (EscolheMapa True x)}
-reageEventoEscolheMapa (EventKey (SpecialKey KeyEsc) Down _ _) e@(EstadoGloss _ (MenuJogar (EscolheMapa False x)) _ _) =
+reageEventoEscolheMapa (EventKey (SpecialKey KeyEsc) Down _ _) e@(EstadoGloss _ (MenuJogar (EscolheMapa False x)) _ _ _ _) =
     do killProcess
        playMenuPrincipal
        return $ e{menuAtual = MenuPrincipal Jogar}
-reageEventoEscolheMapa (EventKey (SpecialKey KeyLeft) Down _ _) e@(EstadoGloss _ (MenuJogar (EscolheMapa False x)) _ _)
+reageEventoEscolheMapa (EventKey (SpecialKey KeyLeft) Down _ _) e@(EstadoGloss _ (MenuJogar (EscolheMapa False x)) _ _ _ _)
     | not (x `elem` [1,3,5,7,9]) = 
         do playMenuChange
-           return $ e{menuAtual = MenuJogar (EscolheMapa False (x - 1)), jogo = obtemNivel (x - 1)}
+           return $ e{menuAtual = MenuJogar (EscolheMapa False (x - 1)), jogo = obtemNivel (x - 1), scoreAtual = 0}
     | otherwise= return e
-reageEventoEscolheMapa (EventKey (SpecialKey KeyRight) Down _ _) e@(EstadoGloss _ (MenuJogar (EscolheMapa False x)) _ _)
+reageEventoEscolheMapa (EventKey (SpecialKey KeyRight) Down _ _) e@(EstadoGloss _ (MenuJogar (EscolheMapa False x)) _ _ _ _)
     | not (x `elem` [2,4,6,8,10]) =
         do playMenuChange
-           return $ e{menuAtual = MenuJogar (EscolheMapa False (x + 1)), jogo = obtemNivel (x + 1)}
+           return $ e{menuAtual = MenuJogar (EscolheMapa False (x + 1)), jogo = obtemNivel (x + 1), scoreAtual = 0}
     | otherwise = return e
-reageEventoEscolheMapa (EventKey (SpecialKey KeyDown) Down _ _) e@(EstadoGloss _ (MenuJogar (EscolheMapa False x)) _ _)
+reageEventoEscolheMapa (EventKey (SpecialKey KeyDown) Down _ _) e@(EstadoGloss _ (MenuJogar (EscolheMapa False x)) _ _ _ _)
     | not (x `elem` [9,10]) =
         do playMenuChange
-           return $ e{menuAtual = MenuJogar (EscolheMapa False (x + 2)), jogo = obtemNivel (x + 2)}
+           return $ e{menuAtual = MenuJogar (EscolheMapa False (x + 2)), jogo = obtemNivel (x + 2), scoreAtual = 0}
     | otherwise = return e
-reageEventoEscolheMapa (EventKey (SpecialKey KeyUp) Down _ _) e@(EstadoGloss _ (MenuJogar (EscolheMapa False x)) _ _)
+reageEventoEscolheMapa (EventKey (SpecialKey KeyUp) Down _ _) e@(EstadoGloss _ (MenuJogar (EscolheMapa False x)) _ _ _ _)
     | not (x `elem` [1,2]) =
         do playMenuChange
-           return $ e{menuAtual = MenuJogar (EscolheMapa False (x - 2)), jogo = obtemNivel (x - 2)}
+           return $ e{menuAtual = MenuJogar (EscolheMapa False (x - 2)), jogo = obtemNivel (x - 2), scoreAtual = 0}
     | otherwise = return e
 reageEventoEscolheMapa (EventKey (Char 'q') Down _ _) _ =
     do killProcess
        exitSuccess
 reageEventoEscolheMapa _ e = return e
+
+-- | Verifica se o 'scoreAtual' é menor do que o 'highScore', se sim atribui um novo 'highScore'.
+verificaHScore :: Int -> EstadoGloss -> HighScores -> HighScores
+verificaHScore x e hs
+    | sa < i = alteraHScore (x - 1) sa hs
+    | otherwise = hs 
+    where i = obtemHScore x e
+          sa = (scoreAtual e)
+
+-- | Altera o 'highScore' na posição dada.
+alteraHScore :: Int -> Int -> HighScores -> HighScores
+alteraHScore _ _ [] = []
+alteraHScore x sa (h:t)
+    | x == 0 = sa : t
+    | otherwise = h : alteraHScore (x - 1) sa t
+
+    -- | Obtém a pontuação mais alta a que se refere o 'Int' dado.
+obtemHScore :: Int -> EstadoGloss -> Int
+obtemHScore x e = hs !! (x - 1)
+    where hs = (highScore e)
 
 -- | Obtém o 'Jogo' a que se refere o 'Int' dado.
 obtemNivel :: Int -> Jogo
@@ -164,44 +204,42 @@ obtemNivel x = jogos !! (x - 1)
     where jogos = [j1, j2, j3, j4, j5, j6, j7, j8, j9, j10]
 
 reageEventoModoArcade :: Event -> EstadoGloss -> IO EstadoGloss
-reageEventoModoArcade (EventKey (SpecialKey KeyEnter) Down _ _) e@(EstadoGloss _ (MenuJogar (ModoArcade False 0)) _ _) = return $ e{menuAtual = MenuJogar (ModoArcade True 1)}
-reageEventoModoArcade (EventKey (SpecialKey KeyUp) Down _ _) e@(EstadoGloss _ (MenuJogar (ModoArcade False 0)) _ _) = 
+reageEventoModoArcade (EventKey (SpecialKey KeyEnter) Down _ _) e@(EstadoGloss _ (MenuJogar (ModoArcade False 0)) _ _ _ _) = 
+    do killProcess
+       return $ e{menuAtual = MenuJogar (ModoArcade True 1)}
+reageEventoModoArcade (EventKey (SpecialKey KeyUp) Down _ _) e@(EstadoGloss _ (MenuJogar (ModoArcade False 0)) _ _ _ _) = 
     do playMenuChange
        return $ e{menuAtual = MenuJogar (EscolheMapa False 0)}
-reageEventoModoArcade (EventKey (SpecialKey KeyDown) Down _ _) e@(EstadoGloss _ (MenuJogar (ModoArcade False 0)) _ _) =
+reageEventoModoArcade (EventKey (SpecialKey KeyDown) Down _ _) e@(EstadoGloss _ (MenuJogar (ModoArcade False 0)) _ _ _ _) =
     do playMenuChange
        return $ e{menuAtual = MenuJogar (CarregarJogo False)}
-reageEventoModoArcade (EventKey (Char 'r') Down _ _) e@(EstadoGloss _ (MenuJogar (ModoArcade True x) ) _ _) = return $ e{jogo = obtemNivel x}
-reageEventoModoArcade (EventKey (SpecialKey KeyRight) Down _ _) e@(EstadoGloss _ (MenuJogar (ModoArcade True x) ) j _) =
+reageEventoModoArcade (EventKey (Char 'r') Down _ _) e@(EstadoGloss _ (MenuJogar (ModoArcade True x)) _ _ _ _) = return $ e{jogo = obtemNivel x, scoreAtual = 0}
+reageEventoModoArcade (EventKey (SpecialKey KeyRight) Down _ _) e@(EstadoGloss _ (MenuJogar (ModoArcade True x)) j _ _ _) =
     do let novoJ@(Jogo _ (Jogador novoC _ _)) = moveDireita j
        if encontraPorta (moveJogador j AndarDireita) == novoC then return $ e{menuAtual = MenuJogar (ModoArcade True (x + 1)), jogo = obtemNivel (x + 1)} else return $ e{jogo = novoJ}
-reageEventoModoArcade (EventKey (SpecialKey KeyLeft) Down _ _) e@(EstadoGloss _ (MenuJogar (ModoArcade True x) ) j _) =
+reageEventoModoArcade (EventKey (SpecialKey KeyLeft) Down _ _) e@(EstadoGloss _ (MenuJogar (ModoArcade True x)) j _ _ _) =
     do let novoJ@(Jogo _ (Jogador novoC _ _)) = moveEsquerda j
        if encontraPorta (moveJogador j AndarEsquerda) == novoC then return $ e{menuAtual = MenuJogar (ModoArcade True (x + 1)), jogo = obtemNivel (x + 1)} else return $ e{jogo = novoJ}
-reageEventoModoArcade (EventKey (SpecialKey KeyUp) Down _ _) e@(EstadoGloss _ (MenuJogar (ModoArcade True x) ) j _) =
+reageEventoModoArcade (EventKey (SpecialKey KeyUp) Down _ _) e@(EstadoGloss _ (MenuJogar (ModoArcade True x)) j _ _ _) =
     do let novoJ@(Jogo _ (Jogador novoC _ _)) = podeTrepar j
        if encontraPorta (moveJogador j AndarDireita) == novoC then return $ e{menuAtual = MenuJogar (ModoArcade True (x + 1)), jogo = obtemNivel (x + 1)} else return $ e{jogo = novoJ}
-reageEventoModoArcade (EventKey (SpecialKey KeyDown) Down _ _) e@(EstadoGloss _ (MenuJogar (ModoArcade True x) ) j _) = return $ e{jogo = interageCaixa j}
-reageEventoModoArcade (EventKey (Char 'g') Down _ _) e =
-     do let j = (jogo e)
-        writeFile "saveGame.txt" (show j)-- grava coordenadas em ficheiro ao pressionar tecla "g"
-        killProcess
-        exitSuccess 
+reageEventoModoArcade (EventKey (SpecialKey KeyDown) Down _ _) e@(EstadoGloss _ (MenuJogar (ModoArcade True x)) j _ _ _) = return $ e{jogo = interageCaixa j}
+reageEventoModoArcade (EventKey (Char 'g') Down _ _) e@(EstadoGloss _ (MenuJogar (ModoArcade True x)) j _ _ _) =
+    do escreverSGame (jogoParaGuardado j)
+       killProcess
+       exitSuccess 
 reageEventoModoArcade (EventKey (Char 'q') Down _ _) _ =
     do killProcess
        exitSuccess                   
 reageEventoModoArcade _ e = return e
 
 reageEventoCarregarJogo :: Event -> EstadoGloss -> IO EstadoGloss
-reageEventoCarregarJogo (EventKey (SpecialKey KeyUp) Down _ _) e@(EstadoGloss _ (MenuJogar (CarregarJogo False)) _ _) =
+reageEventoCarregarJogo (EventKey (SpecialKey KeyUp) Down _ _) e@(EstadoGloss _ (MenuJogar (CarregarJogo False)) _ _ _ _) =
     do playMenuChange
        return $ e{menuAtual = MenuJogar (ModoArcade False 0)}
-reageEventoCarregarJogo (EventKey (SpecialKey KeyEnter) Down _ _) e@(EstadoGloss _ (MenuJogar (CarregarJogo False)) _ _) = return $ e{menuAtual = MenuJogar (CarregarJogo True)}
-reageEventoCarregarJogo (EventKey (Char 'g') Down _ _) e =
-     do let j = (jogo e)
-        writeFile "saveGame.txt" (show j)-- grava coordenadas em ficheiro ao pressionar tecla "g"
-        killProcess
-        exitSuccess 
+reageEventoCarregarJogo (EventKey (SpecialKey KeyEnter) Down _ _) e@(EstadoGloss _ (MenuJogar (CarregarJogo False)) _ _ _ _) = 
+    do s <- lerSGame
+       return $ e{menuAtual = MenuJogar (CarregarJogo True), jogo = guardadoParaJogo s}
 reageEventoCarregarJogo (EventKey (Char 'q') Down _ _) _ =
     do killProcess
        exitSuccess      
@@ -220,7 +258,7 @@ reageTempoGloss ::
     Float -> -- ^ Um 'Float' que contabiliza o tempo que passou desde a última chamada da função 'reageTempoGloss'.
     EstadoGloss ->
     IO EstadoGloss
-reageTempoGloss n e@(EstadoGloss _ _ _ x) = return e{tempo = x + n}
+reageTempoGloss n e@(EstadoGloss _ _ _ x _ _) = return e{tempo = x + n}
 
 -- | Desenha o estado do programa, consoante algumas variáveis - transforma um estado numa 'Picture'.
 desenhaEstadoGloss :: EstadoGloss -> IO Picture
@@ -244,21 +282,27 @@ desenhaEstadoGloss e = do
         MenuJogar (ModoArcade False 0) -> return $ mjArcade i
         MenuJogar (CarregarJogo False) -> return $ mjCarregar i
 
-        MenuJogar (EscolheMapa False 1) -> return $ Pictures [Scale x' y' $ mj1 i, setaBaixo i]
-        MenuJogar (EscolheMapa False 2) -> return $ Pictures [Scale x' y' $ mj2 i, setaBaixo i]
-        MenuJogar (EscolheMapa False 3) -> return $ Pictures [Scale x' y' $ mj3 i, setaCima i, setaBaixo i]
-        MenuJogar (EscolheMapa False 4) -> return $ Pictures [Scale x' y' $ mj4 i, setaCima i, setaBaixo i]
-        MenuJogar (EscolheMapa False 5) -> return $ Pictures [Scale x' y' $ mj5 i, setaCima i, setaBaixo i]
-        MenuJogar (EscolheMapa False 6) -> return $ Pictures [Scale x' y' $ mj6 i, setaCima i, setaBaixo i]
-        MenuJogar (EscolheMapa False 7) -> return $ Pictures [Scale x' y' $ mj7 i, setaCima i]
-        MenuJogar (EscolheMapa False 8) -> return $ Pictures [Scale x' y' $ mj8 i, setaCima i]
-        MenuJogar (EscolheMapa False 9) -> return $ Pictures [Scale x' y' $ mj9 i, setaCima i]
-        MenuJogar (EscolheMapa False 10) -> return $ Pictures [Scale x' y' $ mj10 i, setaCima i]
-        MenuJogar (EscolheMapa True _) -> return $ Pictures [background i, deslocaMapa m' $ Pictures [desenhaMapa e m', desenhaJogador e]]
+        MenuJogar (EscolheMapa False x) -> return $ Scale x' y' $ obtemPicture x e
+        MenuJogar (EscolheMapa True _) -> return $ Pictures [background i, desenhaHScore e, desenhaScoreAtual e, deslocaMapa m' $ Pictures [desenhaMapa e m', desenhaJogador e]]
 
         MenuJogar (ModoArcade True _) -> return $ Pictures [background i, deslocaMapa m' $ Pictures [desenhaMapa e m', desenhaJogador e]]
+        
+        MenuJogar (CarregarJogo True) -> return $ Pictures [background i, deslocaMapa m' $ Pictures [desenhaMapa e m', desenhaJogador e]]
 
--- Função auxiliar de 'desenhaEstadoGloss' - desenha o 'Mapa'.
+-- | Obtém a 'Picture' a que se refere o 'Int' dado.
+obtemPicture :: Int -> EstadoGloss -> Picture
+obtemPicture x e = aplicaEfeitos x e (pictures !! (x - 1))
+    where i = (imagens e) 
+          pictures = [mj1 i, mj2 i, mj3 i, mj4 i, mj5 i, mj6 i, mj7 i, mj8 i, mj9 i, mj10 i]
+
+aplicaEfeitos :: Int -> EstadoGloss -> Picture -> Picture 
+aplicaEfeitos x e p
+    | x `elem` [1,2] = Pictures [p, setaBaixo i]
+    | x `elem` [3,4,5,6] = Pictures [p, setaBaixo i, setaCima i]
+    | otherwise = Pictures [p, setaCima i]
+    where i = (imagens e)
+
+-- | Função auxiliar de 'desenhaEstadoGloss' - desenha o 'Mapa'.
 desenhaMapa :: EstadoGloss -> [(Peca, Coordenadas)] -> Picture
 desenhaMapa _ [] = Blank
 desenhaMapa e ((p,(x,y)):t) =
@@ -271,7 +315,7 @@ desenhaMapa e ((p,(x,y)):t) =
           x' = (fromIntegral x) * 50
           y' = (-1.0) * (fromIntegral y) * 50
 
--- Função auxiliar de 'desenhaEstadoGloss' - desenha o 'Jogador'.
+-- | Função auxiliar de 'desenhaEstadoGloss' - desenha o 'Jogador'.
 desenhaJogador :: EstadoGloss -> Picture
 desenhaJogador e =
     case eval of
@@ -286,6 +330,18 @@ desenhaJogador e =
           x' = (fromIntegral x) * 50
           y' = (-1.0) * (fromIntegral y) * 50
 
+-- | Função auxiliar de 'desenhaEstadoGloss' - desenha o 'highScore'.
+desenhaHScore :: EstadoGloss -> Picture
+desenhaHScore e@(EstadoGloss _ (MenuJogar (EscolheMapa True x)) _ _ _ _)
+    | obtemHScore x e == 1000 = Scale 0.4 0.4 $ Translate 1300 1100 $ Color white $ Text ("High Score: Null")
+    | otherwise = Scale 0.4 0.4 $ Translate 1300 1100 $ Color white $ Text ("High Score: " ++ hsParaString)
+    where hsParaString = show $ (obtemHScore x e)
+
+-- | Função auxiliar de 'desenhaEstadoGloss' - desenha o 'scoreAtual'.
+desenhaScoreAtual :: EstadoGloss -> Picture
+desenhaScoreAtual e@(EstadoGloss _ (MenuJogar (EscolheMapa True _)) _ _ _ _) = Scale 0.4 0.4 $ Translate 1300 950 $ Color white $ Text ("Score atual: " ++ saParaString)
+    where saParaString = show $ (scoreAtual e)
+
 -- Função auxiliar de 'desenhaEstadoGloss' - centra o 'Mapa' nas coordenadas (0,0).
 deslocaMapa :: [(Peca, Coordenadas)] -> Picture -> Picture
 deslocaMapa m i = Translate x y i
@@ -297,9 +353,10 @@ deslocaMapa m i = Translate x y i
 main :: IO ()
 main = do
     playMenuPrincipal
-    imagens <- carregaImagens    
+    imagens <- carregaImagens
+    highScores <- lerFicheiro    
     let jogoInicial = j1
-        estadoGlossInicial = (EstadoGloss imagens (MenuPrincipal Jogar) jogoInicial 0)
+        estadoGlossInicial = (EstadoGloss imagens (MenuPrincipal Jogar) jogoInicial 0 highScores 0)
     playIO window 
         (greyN 0.32) 
         fr
