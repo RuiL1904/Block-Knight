@@ -13,7 +13,8 @@ import qualified System.IO.Strict as SIO
 data JogoGuardado = 
     JogoGuardado
         Mapa
-        Jogador 
+        Jogador
+        Int
     deriving (Show, Read, Generic, NFData)
 
 lerSGame :: IO (JogoGuardado)
@@ -36,7 +37,7 @@ escreverSGame' fn s = do
     SIO.hClose handle
 
 guardadoParaJogo :: JogoGuardado -> Jogo
-guardadoParaJogo (JogoGuardado m j) = (Jogo m j)
+guardadoParaJogo (JogoGuardado m j x) = (Jogo m j)
 
-jogoParaGuardado :: Jogo -> JogoGuardado
-jogoParaGuardado (Jogo m j) = (JogoGuardado m j)
+jogoParaGuardado :: Int -> Jogo -> JogoGuardado
+jogoParaGuardado x (Jogo m j) = (JogoGuardado m j x)
