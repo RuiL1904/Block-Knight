@@ -46,19 +46,21 @@ expandeTree (Node a l) = Node a (map expandeTree l)
 adicionaJogos :: Jogo -> [Movimento] -> [Tree Jogo]
 adicionaJogos j l = map (\mov -> Node (moveJogador j mov) []) l
 
--- | C
+-- | Converte uma lista de 'Jogo' numa lista de 'Movimento'.
 converteListaJogos :: [Jogo] -> [Movimento]
 converteListaJogos [] = []
 converteListaJogos [_] = []
 converteListaJogos (x:y:t) = converteJogos x y : converteListaJogos (y:t)
 
+-- | Função auxiliar de 'converteListaJogos' - converte dois 'Jogo' seguidos num 'Movimento' de acordo com certas condições.
 converteJogos :: Jogo -> Jogo -> Movimento
 converteJogos (Jogo m1 (Jogador (x,y) dir eval)) (Jogo m2 (Jogador (x',y') dir' eval'))
-    | y > y' = Trepar
-    | eval /= eval' = InterageCaixa
-    | dir' == Este = AndarDireita
-    | otherwise = AndarEsquerda
-    
+    | y' > y = Trepar -- Caso o y do primeiro 'Jogo' seja inferior ao y do segundo 'Jogo', então o 'Jogador' trepou.
+    | eval /= eval' = InterageCaixa -- Caso o 'Bool' do 'Jogador' tenha trocado, então o 'Jogador' interagiu com a caixa.
+    | dir' == Este = AndarDireita -- Caso a 'Direcao' do 'Jogador' no segundo 'Jogo' seja este, então o 'Jogador' andou para a direita.
+    | otherwise = AndarEsquerda -- Caso a 'Direcao' do 'Jogador' no segundo jogo seja oeste, então o 'Jogador' andou para a esquerda.
+
+-- | Encontra o caminho que vai dar à 'Porta'.
 encontraCaminho :: Tree Jogo -> Maybe [Jogo]
 encontraCaminho (Node j@(Jogo _ (Jogador c _ _)) [])
     | encontraPorta j = Just [j]
