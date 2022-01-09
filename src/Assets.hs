@@ -1,4 +1,4 @@
-module Src.Assets where
+module Assets where
 
 import Graphics.Gloss
 import Graphics.Gloss.Juicy (loadJuicyPNG, loadJuicyJPG)
