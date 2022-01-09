@@ -20,7 +20,7 @@ data Tree a = Node a [Tree a] deriving Show
 
 -- | Função principal.
 main :: IO ()
-main = print $ resolveJogo 10 j1
+main = print $ resolveJogo 5 jogoTeste
 
 -- | Resolve um jogo - resolver um jogo consiste em encontrar a sequência de movimentos que o jogador pode realizar para chegar à porta.
 resolveJogo :: 
@@ -59,7 +59,7 @@ converteListaJogos (x:y:t) = converteJogos x y : converteListaJogos (y:t)
 -- | Função auxiliar de 'converteListaJogos' - converte dois 'Jogo' seguidos num 'Movimento' de acordo com certas condições.
 converteJogos :: Jogo -> Jogo -> Movimento
 converteJogos (Jogo m1 (Jogador (x,y) dir eval)) (Jogo m2 (Jogador (x',y') dir' eval'))
-    | y' > y = Trepar -- Caso o y do primeiro 'Jogo' seja inferior ao y do segundo 'Jogo', então o 'Jogador' trepou.
+    | y > y' = Trepar -- Caso o y do primeiro 'Jogo' seja superior ao y do segundo 'Jogo', então o 'Jogador' trepou - isto pois, o eixo das ordenadas é ao contrário.
     | eval /= eval' = InterageCaixa -- Caso o 'Bool' do 'Jogador' tenha trocado, então o 'Jogador' interagiu com a caixa.
     | dir' == Este = AndarDireita -- Caso a 'Direcao' do 'Jogador' no segundo 'Jogo' seja este, então o 'Jogador' andou para a direita.
     | otherwise = AndarEsquerda -- Caso a 'Direcao' do 'Jogador' no segundo jogo seja oeste, então o 'Jogador' andou para a esquerda.
