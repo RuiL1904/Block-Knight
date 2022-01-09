@@ -18,6 +18,10 @@ import Niveis
 -- | Uma Rose Tree.
 data Tree a = Node a [Tree a] deriving Show
 
+-- | Função principal.
+main :: IO ()
+main = print $ resolveJogo 10 j1
+
 -- | Resolve um jogo - resolver um jogo consiste em encontrar a sequência de movimentos que o jogador pode realizar para chegar à porta.
 resolveJogo :: 
     Int -- ^ Número máximo de movimentos dado.
@@ -27,9 +31,9 @@ resolveJogo x jogo = resolveJogoTree x (Node jogo [])
 
 -- | Função auxiliar de 'resolveJogo' - Implementa (ou não) a expansão de uma Rose Tree.
 resolveJogoTree :: 
-    Int -> -- ^ Número máximo de movimentos dado.
-    Tree Jogo -> -- ^ Uma Rose Tree de 'Jogo'.
-    Maybe [Movimento] -- ^ -- ^ A sequência de movimentos a executar para completar o jogo.
+    Int  -- ^ Número máximo de movimentos dado.
+    -> Tree Jogo -- ^ Uma Rose Tree de 'Jogo'.
+    -> Maybe [Movimento] -- ^ -- ^ A sequência de movimentos a executar para completar o jogo.
 resolveJogoTree x tree
     | x < 0 = Nothing -- Caso os movimentos não sejam suficientes.
     | eJust caminho = Just (converteListaJogos $ retiraDoJust caminho) -- Caso o caminho exista.
