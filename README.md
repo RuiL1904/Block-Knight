@@ -20,6 +20,12 @@ It was fully developed in Haskell and consisted of 6 tasks:
 
 6. Create a game bot to solve, in the minimum necessary player movements, a map.
 
+## Game gallery
+<img align = "center" width = 900px src = "https://github.com/RuiL1904/Block-Knight/blob/main/assets/mpJogar.jpg"/>
+<img align = "center" width = 900px src = "https://github.com/RuiL1904/Block-Knight/blob/main/assets/eBackground1.jpg"/>
+<img align = "center" width = 900px src = "https://github.com/RuiL1904/Block-Knight/blob/main/assets/mjMapa1.jpg"/>
+<img align = "center" width = 900px src = "https://github.com/RuiL1904/Block-Knight/blob/main/assets/playingMap.png"/>
+
 ## Installing and running the game
 
 Firstly, install Haskell Platform (GHC and Cabal).
