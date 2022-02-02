@@ -67,7 +67,7 @@ $ ./src/Tarefa5_2021li1g033
 
 ## Possible problems
 
-In case you get a mpv error, you'll need to install it (since It was used to play audio inside the game).
+In case you get a mpv error, you'll need to install it (since it was used to play audio inside the game).
 Follow the instructions here: [mpv.io/installation](https://mpv.io/installation/)
 
 # Developed by:
