@@ -4,7 +4,7 @@
 
 This game was developed during the first semester of the Software Engineering degree @ University of Minho. The full process of development was evaluated and established the final grade for the "Laboratórios de Informática I" subject.
 
-The project consisted of recreating the old game BlockDude, with the freedom to add features and completely change the graphical appearance, which was, in this case, heavily inspired by Hollow Knight.
+The project consisted of recreating the old game [BlockDude](http://azich.org/blockdude/), with the freedom to add features and completely change the graphical appearance, which was, in this case, heavily inspired by Hollow Knight.
 
 It was fully developed in Haskell and consisted of 6 tasks:
 
