@@ -4,7 +4,7 @@
 
 This game was developed during the first semester of the Software Engineering degree @ University of Minho. The full process of development was evaluated and established the final grade for the "Laboratórios de Informática I" subject.
 
-The project consisted of recreating the old game [BlockDude](http://azich.org/blockdude/), with the freedom to add features and completely change the graphical appearance, which was, in this case, heavily inspired by Hollow Knight.
+The project consisted of recreating the old game BlockDude, with the freedom to add features and completely change the graphical appearance, which was, in this case, heavily inspired by Hollow Knight.
 
 It was fully developed in Haskell and consisted of 6 tasks:
 
@@ -20,14 +20,9 @@ It was fully developed in Haskell and consisted of 6 tasks:
 
 6. Create a game bot to solve, in the minimum necessary player movements, a map.
 
-## Game gallery
-<img align = "center" width = 900px src = "https://github.com/RuiL1904/Block-Knight/blob/main/assets/mpJogar.jpg"/>
-<img align = "center" width = 900px src = "https://github.com/RuiL1904/Block-Knight/blob/main/assets/eBackground1.jpg"/>
-<img align = "center" width = 900px src = "https://github.com/RuiL1904/Block-Knight/blob/main/assets/mjMapa1.jpg"/>
-<img align = "center" width = 900px src = "https://github.com/RuiL1904/Block-Knight/blob/main/assets/playingMap.png"/>
-
 ## Installing and running the game
 
+**If you use any arch-based distro, head to the next section.**
 Firstly, install Haskell Platform (GHC and Cabal).
 To do so, follow the instructions for your specific system at: [haskell.org/downloads](https://www.haskell.org/downloads/)
 
@@ -64,10 +59,44 @@ $ ghc -package strict-io Tarefa5_2021li1g033.hs
 $ cd ..
 $ ./src/Tarefa5_2021li1g033
 ```
+## Arch-based distros
+Since arch is not that good working with cabal, I recommend you to use stack (you can install it with pacman).
+Finally, since the graphical interface of the game was developed using the Gloss library, you'll need to install it:
+
+```bash
+$ stack upgrade
+$ stack install gloss
+$ stack install gloss-juicy
+```
+
+Since I used some more external libraries, you'll need to install them too:
+
+```bash
+$ stack install strict-io
+```
+
+#### Cloning the repository
+
+```bash
+$ git clone https://github.com/RuiL1904/Block-Knight.git
+```
+#### Compiling
+
+```bash
+$ cd Block-Knight/src
+$ stack ghc --package gloss --package gloss-juicy --package strict-io Tarefa5_2021li1g033.hs
+```
+
+#### Running
+
+```bash
+$ cd ..
+$ ./src/Tarefa5_2021li1g033
+```
 
 ## Possible problems
 
-In case you get a mpv error, you'll need to install it (since it was used to play audio inside the game).
+In case you get a mpv error, you'll need to install it (since It was used to play audio inside the game).
 Follow the instructions here: [mpv.io/installation](https://mpv.io/installation/)
 
 # Developed by:
