@@ -11,9 +11,9 @@ It was fully developed in Haskell and consisted of 6 tasks:
 
 1. Verify if a given map is valid;
 
-2. Construct and destruct maps (from type "[(Peca, Coordenadas)]" to type "Mapa" and vice-versa);
+2. Construct and destruct maps (from type `[(Peca, Coordenadas)]` to type `Mapa` and vice-versa);
 
-3. Instantiate Show in order to display an output of the type "Jogo" as a String;
+3. Instantiate `Show` class in order to display an output of the type `Jogo` as a String;
 
 4. Update the current game state according to the player movements;
 
@@ -104,7 +104,7 @@ $ ./src/Tarefa5_2021li1g033
 
 ## Possible problems
 
-In case you get a mpv error, you'll need to install it (since It was used to play audio inside the game).
+In case you get an mpv error, you'll need to install it (it was used to play audio inside the game).
 Follow the instructions here: [mpv.io/installation](https://mpv.io/installation/)
 
 # Developed by:
