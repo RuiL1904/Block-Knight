@@ -3,7 +3,7 @@
 ## Software Labs I | Laboratórios de Informática I
 ## Grade: 18/20 :star:
 
-This game was developed during the first semester of the Software Engineering degree @ University of Minho. The full process of development was evaluated and established the final grade for the "Laboratórios de Informática I" subject.
+This game was developed during the first semester of the Software Engineering degree @ University of Minho.
 
 The project consisted of recreating the old game BlockDude, with the freedom to add features and completely change the graphical appearance, which was, in this case, heavily inspired by Hollow Knight.
 
@@ -51,7 +51,7 @@ $ cabal install --lib strict-io
 #### Cloning the repository
 
 ```bash
-$ git clone https://github.com/RuiL1904/Block-Knight.git
+$ git clone git@github.com:RuiL1904/Block-Knight.git
 ```
 
 #### Compiling
@@ -86,8 +86,9 @@ $ stack install strict-io
 #### Cloning the repository
 
 ```bash
-$ git clone https://github.com/RuiL1904/Block-Knight.git
+$ git clone git@github.com/RuiL1904/Block-Knight.git
 ```
+
 #### Compiling
 
 ```bash
@@ -104,11 +105,11 @@ $ ./src/Tarefa5_2021li1g033
 
 ## Possible problems
 
-In case you get an mpv error, you'll need to install it (it was used to play audio inside the game).
+In case you get an mpv error, you'll need to install it (as it was used to play audio inside the game).
 Follow the instructions here: [mpv.io/installation](https://mpv.io/installation/)
 
 # Developed by:
 
-- A100643 Rui Lopes;
+- [Rui Lopes](https://github.com/RuiL1904)
 
-- A100646 Diogo Abreu.
+- Diogo Abreu
