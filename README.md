@@ -23,10 +23,10 @@ It was fully developed in Haskell and consisted of 6 tasks:
 
 ## Game gallery
 
-<img align = "center" width = 900px src = "https://github.com/RuiL1904/Block-Knight/blob/main/assets/mpJogar.jpg"/>
-<img align = "center" width = 900px src = "https://github.com/RuiL1904/Block-Knight/blob/main/assets/eBackground1.jpg"/>
-<img align = "center" width = 900px src = "https://github.com/RuiL1904/Block-Knight/blob/main/assets/mjMapa1.jpg"/>
-<img align = "center" width = 900px src = "https://github.com/RuiL1904/Block-Knight/blob/main/assets/playingMap.png"/>
+<img align = "center" width = 900px src = "https://github.com/ruilopesm/Block-Knight/blob/main/assets/mpJogar.jpg"/>
+<img align = "center" width = 900px src = "https://github.com/ruilopesm/Block-Knight/blob/main/assets/eBackground1.jpg"/>
+<img align = "center" width = 900px src = "https://github.com/ruilopesm/Block-Knight/blob/main/assets/mjMapa1.jpg"/>
+<img align = "center" width = 900px src = "https://github.com/ruilopesm/Block-Knight/blob/main/assets/playingMap.png"/>
 
 ## Installing and running the game
 
@@ -51,7 +51,7 @@ $ cabal install --lib strict-io
 #### Cloning the repository
 
 ```bash
-$ git clone git@github.com:RuiL1904/Block-Knight.git
+$ git clone git@github.com:ruilopesm/Block-Knight.git
 ```
 
 #### Compiling
@@ -86,7 +86,7 @@ $ stack install strict-io
 #### Cloning the repository
 
 ```bash
-$ git clone git@github.com/RuiL1904/Block-Knight.git
+$ git clone git@github.com/ruilopesm/Block-Knight.git
 ```
 
 #### Compiling
@@ -110,6 +110,5 @@ Follow the instructions here: [mpv.io/installation](https://mpv.io/installation/
 
 # Developed by:
 
-- [Rui Lopes](https://github.com/RuiL1904)
-
+- [Rui Lopes](https://github.com/ruilopesm)
 - Diogo Abreu
