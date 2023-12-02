@@ -23,10 +23,10 @@ It was fully developed in Haskell and consisted of 6 tasks:
 
 ## Game gallery
 
-<img align = "center" width = 900px src = "https://github.com/ruilopesm/Block-Knight/blob/main/assets/mpJogar.jpg"/>
-<img align = "center" width = 900px src = "https://github.com/ruilopesm/Block-Knight/blob/main/assets/eBackground1.jpg"/>
-<img align = "center" width = 900px src = "https://github.com/ruilopesm/Block-Knight/blob/main/assets/mjMapa1.jpg"/>
-<img align = "center" width = 900px src = "https://github.com/ruilopesm/Block-Knight/blob/main/assets/playingMap.png"/>
+<img align = "center" width = 900px src = "https://github.com/ruilopesm/Block-Knight-LI1/blob/main/assets/mpJogar.jpg"/>
+<img align = "center" width = 900px src = "https://github.com/ruilopesm/Block-Knight-LI1/blob/main/assets/eBackground1.jpg"/>
+<img align = "center" width = 900px src = "https://github.com/ruilopesm/Block-Knight-LI1/blob/main/assets/mjMapa1.jpg"/>
+<img align = "center" width = 900px src = "https://github.com/ruilopesm/Block-Knight-LI1/blob/main/assets/playingMap.png"/>
 
 ## Installing and running the game
 
@@ -51,13 +51,13 @@ $ cabal install --lib strict-io
 #### Cloning the repository
 
 ```bash
-$ git clone git@github.com:ruilopesm/Block-Knight.git
+$ git clone git@github.com:ruilopesm/Block-Knight-LI1.git
 ```
 
 #### Compiling
 
 ```bash
-$ cd Block-Knight/src
+$ cd Block-Knight-LI1/src
 $ ghc -package strict-io Tarefa5_2021li1g033.hs
 ```
 
@@ -86,13 +86,13 @@ $ stack install strict-io
 #### Cloning the repository
 
 ```bash
-$ git clone git@github.com/ruilopesm/Block-Knight.git
+$ git clone git@github.com/ruilopesm/Block-Knight-LI1.git
 ```
 
 #### Compiling
 
 ```bash
-$ cd Block-Knight/src
+$ cd Block-Knight-LI1/src
 $ stack ghc --package gloss --package gloss-juicy --package strict-io Tarefa5_2021li1g033.hs
 ```
 
